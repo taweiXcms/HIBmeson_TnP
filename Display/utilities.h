@@ -108,3 +108,11 @@ bool Acc(MuonInfoBranches MuonInfo, int mu1){
   ) return true;
   else return false;
 };
+// Remove error
+void removeError(TH1D *h)
+{
+  for (int i=1;i<=h->GetNbinsX();i++)
+  {
+    h->SetBinError(i,1E-50);
+  }
+};

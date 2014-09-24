@@ -6,8 +6,8 @@
 #define NUM_BX 9000
 
 
-//void fitJpsi(bool isDataInput=true){
-void fitJpsi(bool isDataInput=false){
+void fitJpsi(bool isDataInput=true){
+//void fitJpsi(bool isDataInput=false){
 
   TString plotfolder = "PlotsData";
   if(!isDataInput) plotfolder = "PlotsMC";
@@ -15,13 +15,25 @@ void fitJpsi(bool isDataInput=false){
   int nBin = 400;
   double mumulow=2.6;
   double mumuhigh=3.5;
-  double mumuTrklow=2.0;
-  double mumuTrkhigh=5.0;
+//  double mumuTrklow=2.0;
+  //double mumuTrkhigh=5.0;
+  double mumuTrklow=2.6;
+  double mumuTrkhigh=3.5;
 
   TString outputfile;
-  if(isDataInput) outputfile="../../TnPfiles/foutputData.root";
-  else outputfile="../../TnPfiles/foutputMC.root";
+//  if(isDataInput) outputfile="../../0913_DefaultMuId_TnPfiles/foutputData_20140913_PAMuon_HIRun2013_28Sep2013_v1.root.root";
+//  if(isDataInput) outputfile="../../0913_DefaultMuId_TnPfiles/foutputData_20140913_PAMuon_HIRun2013_PromptReco_v1_1.root";
+//  if(isDataInput) outputfile="../../0913_DefaultMuId_TnPfiles/foutputData_20140913_PAMuon_HIRun2013_PromptReco_v1_2.root";
+//  if(isDataInput) outputfile="../../0913_DefaultMuId_TnPfiles/foutputData_20140913_PAMuon_HIRun2013_PromptReco_v1_3.root";
+//  if(isDataInput) outputfile="../../0913_DefaultMuId_TnPfiles/foutputData_20140913_PAMuon_HIRun2013_PromptReco_v1_4.root";
+  if(isDataInput) outputfile="../../0913_DefaultMuId_TnPfiles/foutputData_20140913_PAMuon_HIRun2013_PromptReco_v1_5.root";
+//  if(isDataInput) outputfile="../../0913_OldMuId_TnPfiles/foutputData_20140913_PAMuon_HIRun2013_28Sep2013_v1.root.root";
+//  if(isDataInput) outputfile="test.root";
+//
+  else outputfile="../../0913_DefaultMuId_TnPfiles/foutputMC.root";
+//  else outputfile="../../0913_OldMuId_TnPfiles/foutputMC.root";
   TFile*foutput=new TFile(outputfile.Data(),"recreate");
+
   double massTrg, massTrk, massID;
   double passTrg, passTrk, passID;
   double ptTrg, ptTrk, ptID;
@@ -31,7 +43,19 @@ void fitJpsi(bool isDataInput=false){
   TTree* TnPtreeTrg = new TTree("TnPtreeTrg","");
   TTree* TnPtreeTrk = new TTree("TnPtreeTrk","");
   TTree* TnPtreeID = new TTree("TnPtreeID","");
-  
+
+  TString infname;
+//  if(isDataInput) infname="/export/d00/scratch/jwang/tawei/TnPBntuple/TnPnt_20140913_PAMuon_HIRun2013_28Sep2013_v1.root";
+//  if(isDataInput) infname="/export/d00/scratch/jwang/tawei/TnPBntuple/TnPnt_20140913_PAMuon_HIRun2013_PromptReco_v1_1.root";
+//  if(isDataInput) infname="/export/d00/scratch/jwang/tawei/TnPBntuple/TnPnt_20140913_PAMuon_HIRun2013_PromptReco_v1_2.root";
+//  if(isDataInput) infname="/export/d00/scratch/jwang/tawei/TnPBntuple/TnPnt_20140913_PAMuon_HIRun2013_PromptReco_v1_3.root";
+//  if(isDataInput) infname="/export/d00/scratch/jwang/tawei/TnPBntuple/TnPnt_20140913_PAMuon_HIRun2013_PromptReco_v1_4.root";
+  if(isDataInput) infname="/export/d00/scratch/jwang/tawei/TnPBntuple/TnPnt_20140913_PAMuon_HIRun2013_PromptReco_v1_5.root";
+
+  else infname="/export/d00/scratch/jwang/tawei/TnPBntuple/TnPnt_BoostedMC_20140913_Kp.root";
+//  else infname="/export/d00/scratch/jwang/tawei/TnPBntuple/TnPnt_BoostedMC_20140806_Kp.root";
+  TFile *inf = new TFile(infname.Data());
+
   TnPtreeTrg->Branch("mass",&massTrg);
   TnPtreeTrg->Branch("pt",&ptTrg);
   TnPtreeTrg->Branch("eta",&etaTrg);
@@ -62,19 +86,11 @@ void fitJpsi(bool isDataInput=false){
     
   Bool_t IsMuonInAcceptance(Float_t,Float_t,Float_t);
   Bool_t IsTag(Bool_t, Int_t, Bool_t, Bool_t, Bool_t);
-  
-  TString infname;
-  
-  if(isDataInput) infname="/net/hisrv0001/home/tawei/tawei/TnPBntuple/TnPnt_20140802_PAMuon_HIRun2013_28Sep2013_v1.root";
-  else infname="/net/hisrv0001/home/tawei/tawei/TnPBntuple/TnPnt_BoostedMC_20140806_Kp.root";
-//  else infname="/net/hisrv0001/home/tawei/tawei/TnPBntuple/TnPnt_BoostedMC_20140905_Kp.root";
-//  else infname="/net/hisrv0001/home/tawei/tawei/TnPBntuple/TnPnt_BoostedMC_20140906_Kp.root";
-  TFile *inf = new TFile(infname.Data());
-  
+
   TTree *ntuple = (TTree*) inf->Get("ntJpsi");
   TTree *nt_mcgen = (TTree*)inf->Get("ntGen");
   ntuple->AddFriend(nt_mcgen);
-  
+
   //Pt probes
   //trigger efficiency
   TH1D* hTrigPtPass[nMuPtBin];
@@ -185,6 +201,8 @@ void fitJpsi(bool isDataInput=false){
   Bool_t isTMOneStationTight2[NUM_BX];
   Int_t isCalo1[NUM_BX];
   Int_t isCalo2[NUM_BX];
+  float nPixel1[NUM_BX];
+  float nPixel2[NUM_BX];
   
 
   ntuple->SetBranchAddress("Run",&Run);
@@ -219,6 +237,8 @@ void fitJpsi(bool isDataInput=false){
   ntuple->SetBranchAddress("isTriggered2",isTriggered2);
   ntuple->SetBranchAddress("isCalo1",isCalo1);
   ntuple->SetBranchAddress("isCalo2",isCalo2);
+  ntuple->SetBranchAddress("nPixel1",nPixel1);
+  ntuple->SetBranchAddress("nPixel2",nPixel2);
 
   Bool_t qualitycut1;
   Bool_t qualitycut2;
@@ -232,6 +252,7 @@ void fitJpsi(bool isDataInput=false){
   Int_t entries = (Int_t)ntuple->GetEntries();
   
   for (int i=0; i<entries; i++){
+//  for (int i=0; i<1000; i++){
     if (i%10000==0) cout <<i<<" / "<<entries<<endl;
     ntuple->GetEntry(i);
 
@@ -255,6 +276,8 @@ void fitJpsi(bool isDataInput=false){
       
       isTag1=IsTag(isacceptance1,isTriggered1[j],qualitycut1,glb_cut1,isTracker1[j]);
       isTag2=IsTag(isacceptance2,isTriggered2[j],qualitycut2,glb_cut2,isTracker2[j]);
+//	  isTag1 = (isTag1&&nPixel1[j]>1)?true:false;
+//	  isTag2 = (isTag2&&nPixel2[j]>1)?true:false;
 
       if(isTag1||isTag2){
         if(isTag1){
@@ -267,14 +290,16 @@ void fitJpsi(bool isDataInput=false){
                 hTrkPtAll[m]->Fill(mass[j]);
                 hEtaTrkPtAll[m]->Fill(eta2[j]);
                 massTrk=mass[j]; ptTrk = pt2[j]; etaTrk = eta2[j]; passTrk = 0; genTrk = gen[j];
-                if(qualitycut2&&isTracker2[j]) {hTrkPtPass[m]->Fill(mass[j]); passTrk=1; hEtaTrkPtPass[m]->Fill(eta2[j]);}
+                if(qualitycut2&&isTracker2[j]) {hTrkPtPass[m]->Fill(mass[j]); passTrk=1; hEtaTrkPtPass[m]->Fill(eta2[j]);
+}
                 else { hTrkPtFail[m]->Fill(mass[j]); hTrkPtFail[m]->Fill(eta2[j]);}
                 TnPtreeTrk->Fill();
               }//tracking efficinecy over
 
               //muon ID efficiency
 //              if(qualitycut2&&isCalo2[j]&&isacceptance2){
-              if(qualitycut2&&isTracker2[j]&&isacceptance2){
+//              if(qualitycut2&&isTracker2[j]&&isacceptance2){
+              if(qualitycut2&&isTracker2[j]&&isacceptance2&&isCalo2[j]){
                 hMuIdPtAll[m]->Fill(mass[j]);
                 hEtaMuIdPtAll[m]->Fill(eta2[j]);
                 massID=mass[j]; ptID = pt2[j]; etaID = eta2[j]; passID = 0; genID = gen[j];
@@ -313,7 +338,8 @@ void fitJpsi(bool isDataInput=false){
 
               //muon ID efficiency
 //              if(qualitycut1&&isCalo1[j]&&isacceptance1){
-              if(qualitycut1&&isTracker1[j]&&isacceptance1){
+//              if(qualitycut1&&isTracker1[j]&&isacceptance1){
+              if(qualitycut1&&isTracker1[j]&&isacceptance1&&isCalo1[j]){
                 hMuIdPtAll[m]->Fill(mass[j]);
                 hEtaMuIdPtAll[m]->Fill(eta1[j]);
                 massID=mass[j]; ptID = pt1[j]; etaID = eta1[j]; passID = 0; genID = gen[j];
@@ -354,7 +380,8 @@ void fitJpsi(bool isDataInput=false){
 
               //muon ID efficiency
 //              if(qualitycut2&&isCalo2[j]){
-              if(qualitycut2&&isTracker2[j]&&isacceptance2){
+//              if(qualitycut2&&isTracker2[j]&&isacceptance2){
+              if(qualitycut2&&isTracker2[j]&&isacceptance2&&isCalo2[j]){
                 hMuIdEtaAll[m]->Fill(mass[j]);
                 massID=mass[j]; etaID = eta2[j]; etaID = eta2[j]; passID = 0; genID = gen[j];
 //                if(isTracker2[j]&&isacceptance2){ hMuIdEtaPass[m]->Fill(mass[j]); passID=1; }
@@ -390,7 +417,8 @@ void fitJpsi(bool isDataInput=false){
 
               //muon ID efficiency
 //              if(qualitycut1&&isCalo1[j]){
-              if(qualitycut1&&isTracker1[j]&&isacceptance1){
+//              if(qualitycut1&&isTracker1[j]&&isacceptance1){
+              if(qualitycut1&&isTracker1[j]&&isacceptance1&&isCalo1[j]){
                 hMuIdEtaAll[m]->Fill(mass[j]);
                 massID=mass[j]; etaID = eta1[j]; etaID = eta1[j]; passID = 0; genID = gen[j];
 //                if(isTracker1[j]&&isacceptance1) {hMuIdEtaPass[m]->Fill(mass[j]); passID = 1;}

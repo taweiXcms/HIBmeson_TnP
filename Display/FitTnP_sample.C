@@ -21,11 +21,15 @@ bool isDataInput = true;
 
 void FitTnP_sample(){
 
-  TFile*finput=new TFile("../../TnPfiles/foutputData.root","read");
-  TString plotfolder = "PlotsBinFitData";
+  TFile*finput=new TFile("../../0913_DefaultMuId_TnPfiles/foutputData.root","read");
+  TString plotfolder = "0913_DefaultMuId_PlotsBinFitData";
+//  TFile*finput=new TFile("../../0913_NewMuId_TnPfiles/foutputData.root","read");
+//  TString plotfolder = "0913_NewMuId_PlotsBinFitData";
   if(!isDataInput){
-    finput=new TFile("../../TnPfiles/foutputMC.root","read");
-    plotfolder = "PlotsBinFitMC";
+    finput=new TFile("../../0913_DefaultMuId_TnPfiles/foutputMC.root","read");
+    plotfolder = "0913_DefaultMuId_PlotsBinFitMC";
+//    finput=new TFile("../../0913_NewMuId_TnPfiles/foutputMC.root","read");
+//    plotfolder = "0913_NewMuId_PlotsBinFitMC";
   }
   finput->cd();
 
@@ -44,8 +48,10 @@ void FitTnP_sample(){
   double mumuhighMuId[nMuPtBin] = {3.5, 3.5, 3.5, 3.5, 3.5, 3.5, 3.5};
   double mumulowtrg[nMuPtBin] = {2.6, 2.6, 2.6, 2.6, 2.6, 2.6, 2.6};
   double mumuhightrg[nMuPtBin] = {3.5, 3.5, 3.5, 3.5, 3.5, 3.5, 3.5};
-  double mumutrklow[nMuPtBin] = {2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0};
-  double mumutrkhigh[nMuPtBin] = {5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0};
+  //double mumulowtrk[nMuPtBin] = {2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0};
+  //double mumuhightrk[nMuPtBin] = {5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0};
+  double mumulowtrk[nMuPtBin] = {2.6, 2.6, 2.6, 2.6, 2.6, 2.6, 2.6};
+  double mumuhightrk[nMuPtBin] = {3.5, 3.5, 3.5, 3.5, 3.5, 3.5, 3.5};
   
   //Crystall Ball parameters
   ////for trigger efficiency
@@ -57,20 +63,20 @@ void FitTnP_sample(){
   double CB_trg_Pt_n_mean[nMuPtBin] ={1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
   double CB_trg_Pt_n_min[nMuPtBin] = {0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5};
   double CB_trg_Pt_n_max[nMuPtBin] = {100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0};
-  double CB_trg_Pt_sigma[nMuPtBin] = {0.00, 0.005, 0.005, 0.05, 0.05, 0.05, 0.05};
-  double CB_trg_Pt_sigma_min[nMuPtBin] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-  double CB_trg_Pt_sigma_max[nMuPtBin] = {1, 1, 1, 1, 1, 1, 1};
+  double CB_trg_Pt_sigma[nMuPtBin] = {0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05};
+  //double CB_trg_Pt_sigma_min[nMuPtBin] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+  //double CB_trg_Pt_sigma_max[nMuPtBin] = {1, 1, 1, 1, 1, 1, 1};
 
   ////for Muon ID efficiency
   double CB_MuId_Pt_mean_min[nMuPtBin] = {3.07, 3.07, 3.05, 3.0, 3.0, 3.0, 3.0};
   double CB_MuId_Pt_mean_max[nMuPtBin] = {3.12, 3.12, 3.15, 3.2, 3.2, 3.2, 3.2};
   double CB_MuId_Pt_alpha_mean[nMuPtBin] = {4.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
   double CB_MuId_Pt_alpha_min[nMuPtBin] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-  double CB_MuId_Pt_alpha_max[nMuPtBin] = {10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0};
-  double CB_MuId_Pt_n_mean[nMuPtBin] ={10.0, 5.0, 1.0, 1.0, 1.0, 1.0, 1.0};
-  double CB_MuId_Pt_n_min[nMuPtBin] = {5.0, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5};
-  double CB_MuId_Pt_n_max[nMuPtBin] = {50.0, 50.0, 100.0, 200.0, 100.0, 100.0, 100.0};
-  double CB_MuId_Pt_sigma[nMuPtBin] = {0.044, 0.001, 0.01, 0.05, 0.05, 0.05, 0.05};
+  double CB_MuId_Pt_alpha_max[nMuPtBin] = {5.0, 5.0, 10.0, 10.0, 10.0, 10.0, 10.0};
+  double CB_MuId_Pt_n_mean[nMuPtBin] ={5.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
+  double CB_MuId_Pt_n_min[nMuPtBin] = {0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5};
+  double CB_MuId_Pt_n_max[nMuPtBin] = {100.0, 100.0, 200.0, 200.0, 200.0, 200.0, 200.0};
+  double CB_MuId_Pt_sigma[nMuPtBin] = {0.08, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05};
   //double CB_MuId_Pt_sigma_min[nMuPtBin] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
   //double CB_MuId_Pt_sigma_max[nMuPtBin] = {0.1, 0.05, 0.1, 0.1, 0.1, 0.1, 0.1};
 
@@ -89,17 +95,17 @@ void FitTnP_sample(){
 
   //Chebychev parameters
   ////for Muon ID efficiency
-  double Cheb_MuId_Pt_p1_Pass_mean[nMuPtBin] = {-0.80, 0., 0., 0., 0., 0., 0.};
+  double Cheb_MuId_Pt_p1_Pass_mean[nMuPtBin] = {0, 0., 0., 0., 0., 0., 0.};
   double Cheb_MuId_Pt_p1_Pass_min[nMuPtBin] = {-1., -1., -1., -1., -1., -1., -1.};
   double Cheb_MuId_Pt_p1_Pass_max[nMuPtBin] = {+1., +1., +1., +1., +1., +1., +1.};
-  double Cheb_MuId_Pt_p1_Fail_mean[nMuPtBin] = {0.05, 0., 0., 0., 0., 0., 0.};
-  double Cheb_MuId_Pt_p1_Fail_min[nMuPtBin] = {-1., -1., -1., -1., -1., -1., -1.};
-  double Cheb_MuId_Pt_p1_Fail_max[nMuPtBin] = {+1., +1., +1., +1., +1., +1., +1.};
-
-  double Cheb_MuId_Pt_p2_Pass_mean[nMuPtBin] = {-0.002, 0., 0., 0., 0., 0., 0.};
+  double Cheb_MuId_Pt_p2_Pass_mean[nMuPtBin] = {0., 0., 0., 0., 0., 0., 0.};
   double Cheb_MuId_Pt_p2_Pass_min[nMuPtBin] = {-1., -1., -1., -1., -1., -1., -1.};
   double Cheb_MuId_Pt_p2_Pass_max[nMuPtBin] = {+1., +1., +1., +1., +1., +1., +1.};
-  double Cheb_MuId_Pt_p2_Fail_mean[nMuPtBin] = {0.002, 0., 0., 0., 0., 0., 0.};
+
+  double Cheb_MuId_Pt_p1_Fail_mean[nMuPtBin] = {-0.5, -0.7, 0., 0., 0., 0., 0.};
+  double Cheb_MuId_Pt_p1_Fail_min[nMuPtBin] = {-1., -1., -1., -1., -1., -1., -1.};
+  double Cheb_MuId_Pt_p1_Fail_max[nMuPtBin] = {+1., +1., +1., +1., +1., +1., +1.};
+  double Cheb_MuId_Pt_p2_Fail_mean[nMuPtBin] = {-0.1, 0.15, 0., 0., 0., 0., 0.};
   double Cheb_MuId_Pt_p2_Fail_min[nMuPtBin] = {-1., -1., -1., -1., -1., -1., -1.};
   double Cheb_MuId_Pt_p2_Fail_max[nMuPtBin] = {+1., +1., +1., +1., +1., +1., +1.};
 
@@ -176,18 +182,33 @@ void FitTnP_sample(){
 
   //get pt histogram
   for(int i = 0; i < nMuPtBin; i++)
-//  for(int i = 1; i < 2; i++)
+//  for(int i = 0; i < 1; i++)
+//  for(int i = 0; i < 3; i++)
   {
-    RooRealVar masstrk("masstrk", "masstrk", mumutrklow[i], mumutrkhigh[i]);
-    masstrk.setBins(100);
+    RooRealVar masstrk("masstrk", "masstrk", mumulowtrk[i], mumuhightrk[i]);
     RooRealVar massMuId("massMuId", "massMuId", mumulowMuId[i], mumuhighMuId[i]);
-    massMuId.setBins(100);
     RooRealVar masstrg("masstrg", "masstrg", mumulowtrg[i], mumuhightrg[i]);
+    masstrk.setBins(100);
+    massMuId.setBins(100);
     masstrg.setBins(100);
 
     //tracking efficiency
     hTrkPtPass[i] = (TH1D*)finput->Get(Form("hTrkPtPass%d", i));
     hTrkPtFail[i] = (TH1D*)finput->Get(Form("hTrkPtFail%d", i));
+    //Muon Id efficiency
+    hMuIdPtPass[i] = (TH1D*)finput->Get(Form("hMuIdPtPass%d", i));
+    hMuIdPtFail[i] = (TH1D*)finput->Get(Form("hMuIdPtFail%d", i));
+    //trigger efficiency
+    hTrgPtPass[i] = (TH1D*)finput->Get(Form("hTrigPtPass%d", i));
+    hTrgPtFail[i] = (TH1D*)finput->Get(Form("hTrigPtFail%d", i));
+
+//  hTrkPtPass[i]->Rebin(4);
+//  hTrkPtFail[i]->Rebin(4);
+// hMuIdPtPass[i]->Rebin(4);
+// hMuIdPtFail[i]->Rebin(4);
+//  hTrgPtPass[i]->Rebin(4);
+//  hTrgPtFail[i]->Rebin(4);
+
 /*
     double pbinnumtrk = hTrkPtPass[i]->GetNbinsX();
     double plowbintrk = hTrkPtPass[i]->GetBinLowEdge(1);
@@ -202,11 +223,7 @@ void FitTnP_sample(){
     cout << "Failtrk number of bin: " << fbinnumtrk << endl;
     cout << "Failtrk low bin: " << flowbintrk << endl;
     cout << "Failtrk high bin: " << fhighbintrk << endl;
-*/
-    //Muon Id efficiency
-    hMuIdPtPass[i] = (TH1D*)finput->Get(Form("hMuIdPtPass%d", i));
-    hMuIdPtFail[i] = (TH1D*)finput->Get(Form("hMuIdPtFail%d", i));
-/*
+ 
     double pbinnumMuId = hMuIdPtPass[i]->GetNbinsX();
     double plowbinMuId = hMuIdPtPass[i]->GetBinLowEdge(0);
     double phighbinMuId = hMuIdPtPass[i]->GetBinLowEdge(99);
@@ -220,11 +237,7 @@ void FitTnP_sample(){
     cout << "FailMuId number of bin: " << fbinnumMuId << endl;
     cout << "FailMuId low bin: " << flowbinMuId << endl;
     cout << "FailMuId high bin: " << fhighbinMuId << endl;
-*/
-    //trigger efficiency
-    hTrgPtPass[i] = (TH1D*)finput->Get(Form("hTrigPtPass%d", i));
-    hTrgPtFail[i] = (TH1D*)finput->Get(Form("hTrigPtFail%d", i));
-/*
+ 
     double pbinnumtrg = hTrgPtPass[i]->GetNbinsX();
     double plowbintrg = hTrgPtPass[i]->GetBinLowEdge(0);
     double phighbintrg = hTrgPtPass[i]->GetBinLowEdge(99);
@@ -240,16 +253,15 @@ void FitTnP_sample(){
     cout << "Failtrg high bin: " << fhighbintrg << endl;
 */
 
-    //make CB function for trigger efficiency
-    RooRealVar mean_CB_trg("mean_CB_trg", "mean_CB_trg", 3.1, CB_trg_Pt_mean_min[i], CB_trg_Pt_mean_max[i]);
-    //RooRealVar sigma_CB_trg("sigma_CB_trg", "sigma_CB_trg", CB_trg_Pt_sigma[i], CB_trg_Pt_sigma_min[i], CB_trg_Pt_sigma_max[i]);
-    RooRealVar sigma_CB_trg("sigma_CB_trg", "sigma_CB_trg", CB_trg_Pt_sigma[i]);
-    sigma_CB_trg.setConstant(kFALSE);
-    RooRealVar alpha_CB_trg("alpha_CB_trg", "alpha_CB_trg", CB_trg_Pt_alpha_mean[i], CB_trg_Pt_alpha_min[i], CB_trg_Pt_alpha_max[i]);
-    RooRealVar n_CB_trg("n_CB_trg", "n_CB_trg", CB_trg_Pt_n_mean[i], CB_trg_Pt_n_min[i], CB_trg_Pt_n_max[i]);
-
-    RooCBShape signal_CB_trg_Pass("signal_CB_trg_Pass", "signal_CB_trg_Pass", masstrg, mean_CB_trg, sigma_CB_trg, alpha_CB_trg, n_CB_trg);
-    RooCBShape signal_CB_trg_Fail("signal_CB_trg_Fail", "signal_CB_trg_Fail", masstrg, mean_CB_trg, sigma_CB_trg, alpha_CB_trg, n_CB_trg);
+    //make 2gauss function for tracking
+    RooRealVar mean_gaus("mean_gaus", "mean_gaus", 3.1, G_Pt_min[i], G_Pt_max[i]);
+    RooRealVar sigma1_gaus("sigma1_gaus", "sigma1_gaus", G1_Pt_sigma_mean[i], G1_Pt_sigma_min[i], G1_Pt_sigma_max[i]);
+    RooRealVar sigma2_gaus("sigma2_gaus", "sigma2_gaus", G2_Pt_sigma_mean[i], G2_Pt_sigma_min[i], G2_Pt_sigma_max[i]);
+    RooGaussian gauss1("gauss1", "gauss1", masstrk, mean_gaus, sigma1_gaus);
+    RooGaussian gauss2("gauss2", "gauss2", masstrk, mean_gaus, sigma2_gaus);
+    RooRealVar mfrac_gaus("mfrac_gaus", "mfrac_gaus", G_Pt_frac_mean[i], G_Pt_frac_min[i], G_Pt_frac_max[i]);
+    RooAddPdf signal_gauss_Pass("signal_gauss_Pass", "signal_gauss_Pass", RooArgList(gauss1, gauss2), RooArgList(mfrac_gaus));
+    RooAddPdf signal_gauss_Fail("signal_gauss_Fail", "signal_gauss_Fail", RooArgList(gauss1, gauss2), RooArgList(mfrac_gaus));
 
     //make CB function for Muon ID efficiency
     RooRealVar mean_CB_MuId("mean_CB_MuId", "mean_CB_MuId", 3.1, CB_MuId_Pt_mean_min[i], CB_MuId_Pt_mean_max[i]);
@@ -258,28 +270,18 @@ void FitTnP_sample(){
     sigma_CB_MuId.setConstant(kFALSE);
     RooRealVar alpha_CB_MuId("alpha_CB_MuId", "alpha_CB_MuId", CB_MuId_Pt_alpha_mean[i], CB_MuId_Pt_alpha_min[i], CB_MuId_Pt_alpha_max[i]);
     RooRealVar n_CB_MuId("n_CB_MuId", "n_CB_MuId", CB_MuId_Pt_n_mean[i], CB_MuId_Pt_n_min[i], CB_MuId_Pt_n_max[i]);
-
     RooCBShape signal_CB_MuId_Pass("signal_CB_MuId_Pass", "signal_CB_MuId_Pass", massMuId, mean_CB_MuId, sigma_CB_MuId, alpha_CB_MuId, n_CB_MuId);
     RooCBShape signal_CB_MuId_Fail("signal_CB_MuId_Fail", "signal_CB_MuId_Fail", massMuId, mean_CB_MuId, sigma_CB_MuId, alpha_CB_MuId, n_CB_MuId);
 
-    //make 2gauss function
-    RooRealVar mean_gaus("mean_gaus", "mean_gaus", 3.1, G_Pt_min[i], G_Pt_max[i]);
-    RooRealVar sigma1_gaus("sigma1_gaus", "sigma1_gaus", G1_Pt_sigma_mean[i], G1_Pt_sigma_min[i], G1_Pt_sigma_max[i]);
-    RooRealVar sigma2_gaus("sigma2_gaus", "sigma2_gaus", G2_Pt_sigma_mean[i], G2_Pt_sigma_min[i], G2_Pt_sigma_max[i]);
-    RooGaussian gauss1("gauss1", "gauss1", masstrk, mean_gaus, sigma1_gaus);
-    RooGaussian gauss2("gauss2", "gauss2", masstrk, mean_gaus, sigma2_gaus);
-    RooRealVar mfrac_gaus("mfrac_gaus", "mfrac_gaus", G_Pt_frac_mean[i], G_Pt_frac_min[i], G_Pt_frac_max[i]);
-
-    RooAddPdf signal_gauss_Pass("signal_gauss_Pass", "signal_gauss_Pass", RooArgList(gauss1, gauss2), RooArgList(mfrac_gaus));
-    RooAddPdf signal_gauss_Fail("signal_gauss_Fail", "signal_gauss_Fail", RooArgList(gauss1, gauss2), RooArgList(mfrac_gaus));
-
-    //make Chebyschev function for Muon ID efficiency
-    RooRealVar cheb_MuId_p1Pass("cheb_MuId_p1Pass", "cheb_MuId_p1Pass", Cheb_MuId_Pt_p1_Pass_mean[i], Cheb_MuId_Pt_p1_Pass_min[i], Cheb_MuId_Pt_p1_Pass_max[i]);
-    RooRealVar cheb_MuId_p2Pass("cheb_MuId_p2Pass", "cheb_MuId_p2Pass", Cheb_MuId_Pt_p2_Pass_mean[i], Cheb_MuId_Pt_p2_Pass_min[i], Cheb_MuId_Pt_p2_Pass_max[i]);
-    RooChebychev background_cheb_MuId_Pass("background_cheb_MuId_Pass", "background_cheb_MuId_Pass", massMuId, RooArgList(cheb_MuId_p1Pass, cheb_MuId_p2Pass));
-    RooRealVar cheb_MuId_p1Fail("cheb_MuId_p1Fail", "cheb_MuId_p1Fail", Cheb_MuId_Pt_p1_Fail_mean[i], Cheb_MuId_Pt_p1_Fail_min[i], Cheb_MuId_Pt_p1_Fail_max[i]);
-    RooRealVar cheb_MuId_p2Fail("cheb_MuId_p2Fail", "cheb_MuId_p2Fail", Cheb_MuId_Pt_p2_Fail_mean[i], Cheb_MuId_Pt_p2_Fail_min[i], Cheb_MuId_Pt_p2_Fail_max[i]);
-    RooChebychev background_cheb_MuId_Fail("background_cheb_MuId_Fail", "background_cheb_MuId_Fail", massMuId, RooArgList(cheb_MuId_p1Fail, cheb_MuId_p2Fail));
+    //make CB function for trigger efficiency
+    RooRealVar mean_CB_trg("mean_CB_trg", "mean_CB_trg", 3.1, CB_trg_Pt_mean_min[i], CB_trg_Pt_mean_max[i]);
+    //RooRealVar sigma_CB_trg("sigma_CB_trg", "sigma_CB_trg", CB_trg_Pt_sigma[i], CB_trg_Pt_sigma_min[i], CB_trg_Pt_sigma_max[i]);
+    RooRealVar sigma_CB_trg("sigma_CB_trg", "sigma_CB_trg", CB_trg_Pt_sigma[i]);
+    sigma_CB_trg.setConstant(kFALSE);
+    RooRealVar alpha_CB_trg("alpha_CB_trg", "alpha_CB_trg", CB_trg_Pt_alpha_mean[i], CB_trg_Pt_alpha_min[i], CB_trg_Pt_alpha_max[i]);
+    RooRealVar n_CB_trg("n_CB_trg", "n_CB_trg", CB_trg_Pt_n_mean[i], CB_trg_Pt_n_min[i], CB_trg_Pt_n_max[i]);
+    RooCBShape signal_CB_trg_Pass("signal_CB_trg_Pass", "signal_CB_trg_Pass", masstrg, mean_CB_trg, sigma_CB_trg, alpha_CB_trg, n_CB_trg);
+    RooCBShape signal_CB_trg_Fail("signal_CB_trg_Fail", "signal_CB_trg_Fail", masstrg, mean_CB_trg, sigma_CB_trg, alpha_CB_trg, n_CB_trg);
 
     //make Chebyschev function for tracking efficiency
     RooRealVar cheb_trk_p1Pass("cheb_trk_p1Pass", "cheb_trk_p1Pass", Cheb_trk_Pt_p1_Pass_mean[i], Cheb_trk_Pt_p1_Pass_min[i], Cheb_trk_Pt_p1_Pass_max[i]);
@@ -289,7 +291,15 @@ void FitTnP_sample(){
     RooRealVar cheb_trk_p2Fail("cheb_trk_p2Fail", "cheb_trk_p2Fail", Cheb_trk_Pt_p2_Fail_mean[i], Cheb_trk_Pt_p2_Fail_min[i], Cheb_trk_Pt_p2_Fail_max[i]);
     RooChebychev background_cheb_trk_Fail("background_cheb_trk_Fail", "background_cheb_trk_Fail", masstrk, RooArgList(cheb_trk_p1Fail, cheb_trk_p2Fail));
 
-    //make exponential function
+    //make Chebyschev function for Muon ID efficiency
+    RooRealVar cheb_MuId_p1Pass("cheb_MuId_p1Pass", "cheb_MuId_p1Pass", Cheb_MuId_Pt_p1_Pass_mean[i], Cheb_MuId_Pt_p1_Pass_min[i], Cheb_MuId_Pt_p1_Pass_max[i]);
+    RooRealVar cheb_MuId_p2Pass("cheb_MuId_p2Pass", "cheb_MuId_p2Pass", Cheb_MuId_Pt_p2_Pass_mean[i], Cheb_MuId_Pt_p2_Pass_min[i], Cheb_MuId_Pt_p2_Pass_max[i]);
+    RooChebychev background_cheb_MuId_Pass("background_cheb_MuId_Pass", "background_cheb_MuId_Pass", massMuId, RooArgList(cheb_MuId_p1Pass, cheb_MuId_p2Pass));
+    RooRealVar cheb_MuId_p1Fail("cheb_MuId_p1Fail", "cheb_MuId_p1Fail", Cheb_MuId_Pt_p1_Fail_mean[i], Cheb_MuId_Pt_p1_Fail_min[i], Cheb_MuId_Pt_p1_Fail_max[i]);
+    RooRealVar cheb_MuId_p2Fail("cheb_MuId_p2Fail", "cheb_MuId_p2Fail", Cheb_MuId_Pt_p2_Fail_mean[i], Cheb_MuId_Pt_p2_Fail_min[i], Cheb_MuId_Pt_p2_Fail_max[i]);
+    RooChebychev background_cheb_MuId_Fail("background_cheb_MuId_Fail", "background_cheb_MuId_Fail", massMuId, RooArgList(cheb_MuId_p1Fail, cheb_MuId_p2Fail));
+
+    //make exponential function for trigger
     RooRealVar lp("lp", "lp", lp_Pt_mean[i], lp_Pt_min[i], lp_Pt_max[i]);
     RooRealVar lf("lf", "lf", lf_Pt_mean[i], lf_Pt_min[i], lf_Pt_max[i]);
     RooExponential background_exp_Pass("background_exp_Pass", "background_exp_Pass", masstrg, lp);
@@ -302,21 +312,18 @@ void FitTnP_sample(){
     ////tracking efficinecy
     RooDataHist dataTrkPass("dataTrkPass", "dataTrkPass", masstrk, hTrkPtPass[i]);
     RooDataHist dataTrkFail("dataTrkFail", "dataTrkFail", masstrk, hTrkPtFail[i]);
-
     RooDataSet dataTrkPassset("dataTrkPassset", "masstrk", RooArgSet(masstrk, weight), WeightVar("weight"));
     RooDataSet dataTrkFailset("dataTrkFailset", "masstrk", RooArgSet(masstrk, weight), WeightVar("weight"));
 
     ////Muon ID efficiency
     RooDataHist dataMuIdPass("dataMuIdPass", "dataMuIdPass", massMuId, hMuIdPtPass[i]);
     RooDataHist dataMuIdFail("dataMuIdFail", "dataMuIdFail", massMuId, hMuIdPtFail[i]);
-
     RooDataSet dataMuIdPassset("dataMuIdPassset", "massMuId", RooArgSet(massMuId, weight), WeightVar("weight"));
     RooDataSet dataMuIdFailset("dataMuIdFailset", "massMuId", RooArgSet(massMuId, weight), WeightVar("weight"));
 
     ////trigger efficiency
     RooDataHist dataTrgPass("dataTrgPass", "dataTrgPass", masstrg, hTrgPtPass[i]);
     RooDataHist dataTrgFail("dataTrgFail", "dataTrgFail", masstrg, hTrgPtFail[i]);
-
     RooDataSet dataTrgPassset("dataTrgPassset", "masstrg", RooArgSet(masstrg, weight), WeightVar("weight"));
     RooDataSet dataTrgFailset("dataTrgFailset", "masstrg", RooArgSet(masstrg, weight), WeightVar("weight"));
 
@@ -324,18 +331,25 @@ void FitTnP_sample(){
     for(int j = 0; j < dataTrkPass.numEntries(); j++)
     {
       ////tracking efficinecy
+      ////Note: somehow you have to do dataTrkPass.get(j) a first time so that the bin position will be correct.
+      dataTrkPass.get(j);
+	  dataTrkFail.get(j);
       dataTrkPassset.add(*dataTrkPass.get(j), dataTrkPass.weight());
       dataTrkFailset.add(*dataTrkFail.get(j), dataTrkFail.weight());
     }    
     for(int j = 0; j < dataMuIdPass.numEntries(); j++)
     {
       ////Muon ID efficinecy
+      dataMuIdPass.get(j);
+      dataMuIdFail.get(j);
       dataMuIdPassset.add(*dataMuIdPass.get(j), dataMuIdPass.weight());
       dataMuIdFailset.add(*dataMuIdFail.get(j), dataMuIdFail.weight());
     }
     for(int j = 0; j < dataTrgPass.numEntries(); j++)
     {
       ////trigger efficinecy
+      dataTrgPass.get(j);
+	  dataTrgFail.get(j);
       dataTrgPassset.add(*dataTrgPass.get(j), dataTrgPass.weight());
       dataTrgFailset.add(*dataTrgFail.get(j), dataTrgFail.weight());
     }
@@ -356,7 +370,7 @@ void FitTnP_sample(){
     RooRealVar nbkgFailtrk("nbkgFailtrk", "nbkgFailtrk", 1, 0, 1E9);
 
     //Muon ID efficiency
-    RooRealVar nsigMuId("nsigMuId", "nsigMuId", 1, 0, 1E9);
+    RooRealVar nsigMuId("nsigMuId", "nsigMuId", 1, 0, 1E6);
     RooRealVar efficiencyMuId("efficiencyMuId", "efficiencyMuId", 0.9, 0., 1.);
     RooFormulaVar nsigPassMuId("nsigPassMuId", "nsigPassMuId", "nsigMuId*efficiencyMuId", RooArgList(nsigMuId, efficiencyMuId));
     RooFormulaVar nsigFailMuId("nsigFailMuId", "nsigFailMuId", "nsigMuId*(1-efficiencyMuId)", RooArgList(nsigMuId, efficiencyMuId));
@@ -401,9 +415,13 @@ void FitTnP_sample(){
     simTrgPdf.addPdf(model_CB_exp_Pass, "Pass");
     simTrgPdf.addPdf(model_CB_exp_Fail, "Fail");
 
-//    simTrkPdf.fitTo(dataTrkAllset, Extended(true), NumCPU(numCPU), PrintLevel(quiet?-1:1), Warnings(!quiet));
-//    simMuIdPdf.fitTo(dataMuIdAllset, Extended(true), NumCPU(numCPU), PrintLevel(quiet?-1:1), Warnings(!quiet));
-    simTrgPdf.fitTo(dataTrgAllset, Extended(true), NumCPU(numCPU), PrintLevel(quiet?-1:1), Warnings(!quiet));
+	cout<<"Fitting pt binning: "<<i<<endl;
+    simTrkPdf.fitTo(  dataTrkAllset, Extended(true), NumCPU(numCPU), PrintLevel(quiet?-1:1), Warnings(!quiet));
+    simTrkPdf.fitTo(  dataTrkAllset, Extended(true), NumCPU(numCPU), PrintLevel(quiet?-1:1), Warnings(!quiet));
+    simMuIdPdf.fitTo(dataMuIdAllset, Extended(true), NumCPU(numCPU), PrintLevel(quiet?-1:1), Warnings(!quiet));
+    simMuIdPdf.fitTo(dataMuIdAllset, Extended(true), NumCPU(numCPU), PrintLevel(quiet?-1:1), Warnings(!quiet));
+    simTrgPdf.fitTo(  dataTrgAllset, Extended(true), NumCPU(numCPU), PrintLevel(quiet?-1:1), Warnings(!quiet));
+    simTrgPdf.fitTo(  dataTrgAllset, Extended(true), NumCPU(numCPU), PrintLevel(quiet?-1:1), Warnings(!quiet));
 
     //draw tracking efficiency mass distribution
     ////pass
@@ -415,6 +433,10 @@ void FitTnP_sample(){
 
     ctrkpass->cd();
     frameTrkPass->Draw();
+    TLatex t1 = myLatex();
+    t1.DrawLatex(0.17, 0.85, "Passing probes");
+    t1.DrawLatex(0.17, 0.80, "tracking efficiency");
+    t1.DrawLatex(0.17, 0.75, Form("p_{T} = %.1f ~ %.1f GeV", MuPtBin[i], MuPtBin[i+1]));
     ctrkpass->SaveAs(Form("%s/Trk_Pt_bin%d_Pass.pdf", plotfolder.Data(), i));
 
     ////fail
@@ -427,6 +449,9 @@ void FitTnP_sample(){
 
     ctrkfail->cd();
     frameTrkFail->Draw();
+    t1.DrawLatex(0.17, 0.85, "Failing probes");
+    t1.DrawLatex(0.17, 0.80, "tracking efficiency");
+    t1.DrawLatex(0.17, 0.75, Form("p_{T} = %.1f ~ %.1f GeV", MuPtBin[i], MuPtBin[i+1]));
     ctrkfail->SaveAs(Form("%s/Trk_Pt_bin%d_Fail.pdf", plotfolder.Data(), i));
 
     ////all
@@ -439,6 +464,9 @@ void FitTnP_sample(){
 
     ctrkall->cd();
     frameTrkAll->Draw();
+    t1.DrawLatex(0.17, 0.85, "All probes");
+    t1.DrawLatex(0.17, 0.80, "tracking efficiency");
+    t1.DrawLatex(0.17, 0.75, Form("p_{T} = %.1f ~ %.1f GeV", MuPtBin[i], MuPtBin[i+1]));
     ctrkall->SaveAs(Form("%s/Trk_Pt_bin%d_All.pdf", plotfolder.Data(), i));
 
     //draw MuonId efficiency mass distribution
@@ -452,6 +480,9 @@ void FitTnP_sample(){
 
     cMuIdpass->cd();
     frameMuIdPass->Draw();
+    t1.DrawLatex(0.17, 0.85, "Passing probes");
+    t1.DrawLatex(0.17, 0.80, "Mu ID efficiency");
+    t1.DrawLatex(0.17, 0.75, Form("p_{T} = %.1f ~ %.1f GeV", MuPtBin[i], MuPtBin[i+1]));
     cMuIdpass->SaveAs(Form("%s/MuId_Pt_bin%d_Pass.pdf", plotfolder.Data(), i));
 
     ////fail
@@ -464,6 +495,9 @@ void FitTnP_sample(){
 
     cMuIdfail->cd();
     frameMuIdFail->Draw();
+    t1.DrawLatex(0.17, 0.85, "Failing probes");
+    t1.DrawLatex(0.17, 0.80, "Mu ID efficiency");
+    t1.DrawLatex(0.17, 0.75, Form("p_{T} = %.1f ~ %.1f GeV", MuPtBin[i], MuPtBin[i+1]));
     cMuIdfail->SaveAs(Form("%s/MuId_Pt_bin%d_Fail.pdf", plotfolder.Data(), i));
 
     ////all
@@ -476,6 +510,9 @@ void FitTnP_sample(){
 
     cMuIdall->cd();
     frameMuIdAll->Draw();
+    t1.DrawLatex(0.17, 0.85, "All probes");
+    t1.DrawLatex(0.17, 0.80, "Mu ID efficiency");
+    t1.DrawLatex(0.17, 0.75, Form("p_{T} = %.1f ~ %.1f GeV", MuPtBin[i], MuPtBin[i+1]));
     cMuIdall->SaveAs(Form("%s/MuId_Pt_bin%d_All.pdf", plotfolder.Data(), i));
 
     //draw trigger efficiency mass distribution
@@ -489,6 +526,9 @@ void FitTnP_sample(){
 
     ctrgpass->cd();
     frameTrgPass->Draw();
+    t1.DrawLatex(0.17, 0.85, "Passing probes");
+    t1.DrawLatex(0.17, 0.80, "trigger efficiency");
+    t1.DrawLatex(0.17, 0.75, Form("p_{T} = %.1f ~ %.1f GeV", MuPtBin[i], MuPtBin[i+1]));
     ctrgpass->SaveAs(Form("%s/Trg_Pt_bin%d_Pass.pdf", plotfolder.Data(), i));
 
     ////fail
@@ -501,6 +541,9 @@ void FitTnP_sample(){
 
     ctrgfail->cd();
     frameTrgFail->Draw();
+    t1.DrawLatex(0.17, 0.85, "Failing probes");
+    t1.DrawLatex(0.17, 0.80, "trigger efficiency");
+    t1.DrawLatex(0.17, 0.75, Form("p_{T} = %.1f ~ %.1f GeV", MuPtBin[i], MuPtBin[i+1]));
     ctrgfail->SaveAs(Form("%s/Trg_Pt_bin%d_Fail.pdf", plotfolder.Data(), i));
 
     ////all
@@ -513,15 +556,21 @@ void FitTnP_sample(){
 
     ctrgall->cd();
     frameTrgAll->Draw();
+    t1.DrawLatex(0.17, 0.85, "All probes");
+    t1.DrawLatex(0.17, 0.80, "trigger efficiency");
+    t1.DrawLatex(0.17, 0.75, Form("p_{T} = %.1f ~ %.1f GeV", MuPtBin[i], MuPtBin[i+1]));
     ctrgall->SaveAs(Form("%s/Trg_Pt_bin%d_All.pdf", plotfolder.Data(), i));
 
     //Get efficiency
     EffTrig->SetBinContent(i+1, efficiencytrg.getVal());
-    EffTrig->SetBinError(i+1, 0.00001);
+//    EffTrig->SetBinError(i+1, 0.00001);
+    EffTrig->SetBinError(i+1, efficiencytrg.getError());
     EffTrk->SetBinContent(i+1, efficiencytrk.getVal());
-    EffTrk->SetBinError(i+1, 0.00001);
+//    EffTrk->SetBinError(i+1, 0.00001);
+    EffTrk->SetBinError(i+1, efficiencytrk.getError());
     EffMuId->SetBinContent(i+1, efficiencyMuId.getVal());
-    EffMuId->SetBinError(i+1, 0.00001);
+//    EffMuId->SetBinError(i+1, 0.00001);
+    EffMuId->SetBinError(i+1, efficiencyMuId.getError());
   }
   //Save efficiency plots
   TString outputfile;
@@ -559,5 +608,3 @@ void FitTnP_sample(){
   }
 */
 }
-
-
