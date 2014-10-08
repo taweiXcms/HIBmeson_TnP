@@ -3,8 +3,8 @@
 #include "TString.h"
 #include "../Display/utilities.h"
 #include "TH1D.h"
-#define NUM_BX 9000
-
+//#define NUM_BX   9000
+#define NUM_BX 20000
 
 void fitJpsi(bool isDataInput=true){
 //void fitJpsi(bool isDataInput=false){
@@ -15,46 +15,43 @@ void fitJpsi(bool isDataInput=true){
   int nBin = 400;
   double mumulow=2.6;
   double mumuhigh=3.5;
-//  double mumuTrklow=2.0;
-  //double mumuTrkhigh=5.0;
-  double mumuTrklow=2.6;
-  double mumuTrkhigh=3.5;
+  double mumuTrklow=2.0;
+  double mumuTrkhigh=5.0;
+//  double mumuTrklow=2.6;
+//  double mumuTrkhigh=3.5;
+//
 
   TString outputfile;
-//  if(isDataInput) outputfile="../../0913_DefaultMuId_TnPfiles/foutputData_20140913_PAMuon_HIRun2013_28Sep2013_v1.root.root";
-//  if(isDataInput) outputfile="../../0913_DefaultMuId_TnPfiles/foutputData_20140913_PAMuon_HIRun2013_PromptReco_v1_1.root";
-//  if(isDataInput) outputfile="../../0913_DefaultMuId_TnPfiles/foutputData_20140913_PAMuon_HIRun2013_PromptReco_v1_2.root";
-//  if(isDataInput) outputfile="../../0913_DefaultMuId_TnPfiles/foutputData_20140913_PAMuon_HIRun2013_PromptReco_v1_3.root";
-//  if(isDataInput) outputfile="../../0913_DefaultMuId_TnPfiles/foutputData_20140913_PAMuon_HIRun2013_PromptReco_v1_4.root";
-  if(isDataInput) outputfile="../../0913_DefaultMuId_TnPfiles/foutputData_20140913_PAMuon_HIRun2013_PromptReco_v1_5.root";
-//  if(isDataInput) outputfile="../../0913_OldMuId_TnPfiles/foutputData_20140913_PAMuon_HIRun2013_28Sep2013_v1.root.root";
-//  if(isDataInput) outputfile="test.root";
-//
-  else outputfile="../../0913_DefaultMuId_TnPfiles/foutputMC.root";
-//  else outputfile="../../0913_OldMuId_TnPfiles/foutputMC.root";
+//  if(isDataInput) outputfile="../../0930_DefaultMuId_TnPfiles/foutputData_20140930_PAMuon_HIRun2013_28Sep2013_v1.root";
+//  if(isDataInput) outputfile="../../0930_DefaultMuId_TnPfiles/foutputData_20140930_PAMuon_HIRun2013_PromptReco_v1_1.root";
+//  if(isDataInput) outputfile="../../0930_DefaultMuId_TnPfiles/foutputData_20140930_PAMuon_HIRun2013_PromptReco_v1_2.root";
+//  if(isDataInput) outputfile="../../0930_DefaultMuId_TnPfiles/foutputData_20140930_PAMuon_HIRun2013_PromptReco_v1_3.root";
+//  if(isDataInput) outputfile="../../0930_DefaultMuId_TnPfiles/foutputData_20140930_PAMuon_HIRun2013_PromptReco_v1_4.root";
+//  if(isDataInput) outputfile="../../0930_DefaultMuId_TnPfiles/foutputData_20140930_PAMuon_HIRun2013_PromptReco_v1_5.root";
+  if(isDataInput) outputfile="../../0930_DefaultMuId_TnPfiles/foutputData_20140930_PAMuon_HIRun2013_PromptReco_v1_6.root";
+  else outputfile="../../0930_DefaultMuId_TnPfiles/foutputMC.root";
   TFile*foutput=new TFile(outputfile.Data(),"recreate");
-
-  double massTrg, massTrk, massID;
-  double passTrg, passTrk, passID;
-  double ptTrg, ptTrk, ptID;
-  double etaTrg, etaTrk, etaID;
-  double genTrg, genTrk, genID;
 
   TTree* TnPtreeTrg = new TTree("TnPtreeTrg","");
   TTree* TnPtreeTrk = new TTree("TnPtreeTrk","");
   TTree* TnPtreeID = new TTree("TnPtreeID","");
 
   TString infname;
-//  if(isDataInput) infname="/export/d00/scratch/jwang/tawei/TnPBntuple/TnPnt_20140913_PAMuon_HIRun2013_28Sep2013_v1.root";
-//  if(isDataInput) infname="/export/d00/scratch/jwang/tawei/TnPBntuple/TnPnt_20140913_PAMuon_HIRun2013_PromptReco_v1_1.root";
-//  if(isDataInput) infname="/export/d00/scratch/jwang/tawei/TnPBntuple/TnPnt_20140913_PAMuon_HIRun2013_PromptReco_v1_2.root";
-//  if(isDataInput) infname="/export/d00/scratch/jwang/tawei/TnPBntuple/TnPnt_20140913_PAMuon_HIRun2013_PromptReco_v1_3.root";
-//  if(isDataInput) infname="/export/d00/scratch/jwang/tawei/TnPBntuple/TnPnt_20140913_PAMuon_HIRun2013_PromptReco_v1_4.root";
-  if(isDataInput) infname="/export/d00/scratch/jwang/tawei/TnPBntuple/TnPnt_20140913_PAMuon_HIRun2013_PromptReco_v1_5.root";
-
-  else infname="/export/d00/scratch/jwang/tawei/TnPBntuple/TnPnt_BoostedMC_20140913_Kp.root";
-//  else infname="/export/d00/scratch/jwang/tawei/TnPBntuple/TnPnt_BoostedMC_20140806_Kp.root";
+//  if(isDataInput) infname="/export/d00/scratch/jwang/tawei/TnPBntuple/TnPnt_20140930_PAMuon_HIRun2013_28Sep2013_v1.root";
+//  if(isDataInput) infname="/export/d00/scratch/jwang/tawei/TnPBntuple/TnPnt_20140930_PAMuon_HIRun2013_PromptReco_v1_1.root";
+//  if(isDataInput) infname="/export/d00/scratch/jwang/tawei/TnPBntuple/TnPnt_20140930_PAMuon_HIRun2013_PromptReco_v1_2.root";
+//  if(isDataInput) infname="/export/d00/scratch/jwang/tawei/TnPBntuple/TnPnt_20140930_PAMuon_HIRun2013_PromptReco_v1_3.root";
+//  if(isDataInput) infname="/export/d00/scratch/jwang/tawei/TnPBntuple/TnPnt_20140930_PAMuon_HIRun2013_PromptReco_v1_4.root";
+//  if(isDataInput) infname="/export/d00/scratch/jwang/tawei/TnPBntuple/TnPnt_20140930_PAMuon_HIRun2013_PromptReco_v1_5.root";
+  if(isDataInput) infname="/export/d00/scratch/jwang/tawei/TnPBntuple/TnPnt_20140930_PAMuon_HIRun2013_PromptReco_v1_6.root";
+  else infname="/export/d00/scratch/jwang/tawei/TnPBntuple/TnPnt_BoostedMC_20140930_Kp.root";
   TFile *inf = new TFile(infname.Data());
+
+  double massTrg, massTrk, massID;
+  double passTrg, passTrk, passID;
+  double ptTrg, ptTrk, ptID;
+  double etaTrg, etaTrk, etaID;
+  double genTrg, genTrk, genID;
 
   TnPtreeTrg->Branch("mass",&massTrg);
   TnPtreeTrg->Branch("pt",&ptTrg);
@@ -172,37 +169,53 @@ void fitJpsi(bool isDataInput=true){
   }
 
   int Run,size,Event;
-  int isTriggered1[NUM_BX];
-  int isTriggered2[NUM_BX];
-  Float_t pt[NUM_BX];
-  Float_t mass[NUM_BX];
-  Float_t genpt[NUM_BX];
-  Float_t eta[NUM_BX];
-  Float_t y[NUM_BX];
-  Float_t phi[NUM_BX];
-  int isTracker1[NUM_BX];
-  int isTracker2[NUM_BX];
-  Float_t pt1[NUM_BX];
-  Float_t pt2[NUM_BX];
-  Float_t eta1[NUM_BX];
-  Float_t eta2[NUM_BX];
-  Float_t p1[NUM_BX];
-  Float_t p2[NUM_BX];
-  Float_t phi1[NUM_BX];
-  Float_t phi2[NUM_BX];
+  bool isTriggered1[NUM_BX];
+  bool isTriggered2[NUM_BX];
+  double pt[NUM_BX][3];
+  double mass[NUM_BX][3];
+  double eta[NUM_BX][3];
+  double y[NUM_BX][3];
+  double phi[NUM_BX][3];
+  bool isTracker1[NUM_BX];
+  bool isTracker2[NUM_BX];
+  int    charge1[NUM_BX];
+  int    charge2[NUM_BX];
+  double pt1[NUM_BX];
+  double pt2[NUM_BX];
+  double eta1[NUM_BX];
+  double eta2[NUM_BX];
+  double phi1[NUM_BX];
+  double phi2[NUM_BX];
+  double p1[NUM_BX];
+  double p2[NUM_BX];
   int id1[NUM_BX];
   int id2[NUM_BX];
-  Bool_t outerTrackisNonnull1[NUM_BX];
-  Bool_t outerTrackisNonnull2[NUM_BX];
+  bool outerTrackisNonnull1[NUM_BX];
+  bool outerTrackisNonnull2[NUM_BX];
   int gen[NUM_BX];
-  Bool_t isTrackerMuArbitrated1[NUM_BX];
-  Bool_t isTrackerMuArbitrated2[NUM_BX];
-  Bool_t isTMOneStationTight1[NUM_BX];
-  Bool_t isTMOneStationTight2[NUM_BX];
-  Int_t isCalo1[NUM_BX];
-  Int_t isCalo2[NUM_BX];
-  float nPixel1[NUM_BX];
-  float nPixel2[NUM_BX];
+  bool isTrackerMuArbitrated1[NUM_BX];
+  bool isTrackerMuArbitrated2[NUM_BX];
+  bool isTMOneStationTight1[NUM_BX];
+  bool isTMOneStationTight2[NUM_BX];
+  bool isCalo1[NUM_BX];
+  bool isCalo2[NUM_BX];
+  int nPixel1[NUM_BX];
+  int nPixel2[NUM_BX];
+
+  bool   isStandAloneMuon1[NUM_BX];
+  bool   isStandAloneMuon2[NUM_BX];
+  int    StandAloneMuon_id1[NUM_BX];
+  int    StandAloneMuon_id2[NUM_BX];
+  int    StandAloneMuon_charge1[NUM_BX];
+  int    StandAloneMuon_charge2[NUM_BX];
+  double StandAloneMuon_pt1[NUM_BX];
+  double StandAloneMuon_pt2[NUM_BX];
+  double StandAloneMuon_eta1[NUM_BX];
+  double StandAloneMuon_eta2[NUM_BX];
+  double StandAloneMuon_phi1[NUM_BX];
+  double StandAloneMuon_phi2[NUM_BX];
+  double StandAloneMuon_p1[NUM_BX];
+  double StandAloneMuon_p2[NUM_BX];
   
 
   ntuple->SetBranchAddress("Run",&Run);
@@ -210,20 +223,21 @@ void fitJpsi(bool isDataInput=true){
   ntuple->SetBranchAddress("size",&size);
   ntuple->SetBranchAddress("mass",mass);
   ntuple->SetBranchAddress("pt",pt);
-  ntuple->SetBranchAddress("genpt",genpt);
   ntuple->SetBranchAddress("eta",eta);
   ntuple->SetBranchAddress("y",y);
   ntuple->SetBranchAddress("phi",phi);
   ntuple->SetBranchAddress("isTracker1",isTracker1);
   ntuple->SetBranchAddress("isTracker2",isTracker2);
+  ntuple->SetBranchAddress("charge1",charge1);
+  ntuple->SetBranchAddress("charge2",charge2);
   ntuple->SetBranchAddress("pt1",pt1);
   ntuple->SetBranchAddress("pt2",pt2);
   ntuple->SetBranchAddress("eta1",eta1);
   ntuple->SetBranchAddress("eta2",eta2);
-  ntuple->SetBranchAddress("p1",p1);
-  ntuple->SetBranchAddress("p2",p2);
   ntuple->SetBranchAddress("phi1",phi1);
   ntuple->SetBranchAddress("phi2",phi2);
+  ntuple->SetBranchAddress("p1",p1);
+  ntuple->SetBranchAddress("p2",p2);
   ntuple->SetBranchAddress("id1",id1);
   ntuple->SetBranchAddress("id2",id2);
   ntuple->SetBranchAddress("outerTrackisNonnull1",outerTrackisNonnull1);
@@ -240,39 +254,78 @@ void fitJpsi(bool isDataInput=true){
   ntuple->SetBranchAddress("nPixel1",nPixel1);
   ntuple->SetBranchAddress("nPixel2",nPixel2);
 
-  Bool_t qualitycut1;
-  Bool_t qualitycut2;
-  Bool_t glb_cut1;
-  Bool_t glb_cut2;
-  Bool_t isTag1;
-  Bool_t isTag2;
-  Bool_t isacceptance1;
-  Bool_t isacceptance2;
+  ntuple->SetBranchAddress("isStandAloneMuon1", isStandAloneMuon1);
+  ntuple->SetBranchAddress("isStandAloneMuon2", isStandAloneMuon2);
+  ntuple->SetBranchAddress("StandAloneMuon_id1", StandAloneMuon_id1);
+  ntuple->SetBranchAddress("StandAloneMuon_id2", StandAloneMuon_id2);
+  ntuple->SetBranchAddress("StandAloneMuon_charge1", StandAloneMuon_charge1);
+  ntuple->SetBranchAddress("StandAloneMuon_charge2", StandAloneMuon_charge2);
+  ntuple->SetBranchAddress("StandAloneMuon_pt1", StandAloneMuon_pt1);
+  ntuple->SetBranchAddress("StandAloneMuon_pt2", StandAloneMuon_pt2);
+  ntuple->SetBranchAddress("StandAloneMuon_eta1",StandAloneMuon_eta1);
+  ntuple->SetBranchAddress("StandAloneMuon_eta2",StandAloneMuon_eta2);
+  ntuple->SetBranchAddress("StandAloneMuon_phi1",StandAloneMuon_phi1);
+  ntuple->SetBranchAddress("StandAloneMuon_phi2",StandAloneMuon_phi2);
+//  ntuple->SetBranchAddress("StandAloneMuon_p1", StandAloneMuon_p1);
+//  ntuple->SetBranchAddress("StandAloneMuon_p2", StandAloneMuon_p2);
+
+  bool qualitycut1;
+  bool qualitycut2;
+  bool qualitycut1_STA;
+  bool qualitycut2_STA;
+  bool glb_cut1;
+  bool glb_cut2;
+  bool isTag1;
+  bool isTag2;
+  bool isacceptance1;
+  bool isacceptance2;
+  bool isacceptance1_STA;
+  bool isacceptance2_STA;
+  TLorentzVector* b4P = new TLorentzVector;
 
   Int_t entries = (Int_t)ntuple->GetEntries();
-  
   for (int i=0; i<entries; i++){
 //  for (int i=0; i<1000; i++){
     if (i%10000==0) cout <<i<<" / "<<entries<<endl;
     ntuple->GetEntry(i);
-
     for(int j=0;j<size;j++){
-    
       qualitycut1 = false;
       qualitycut2 = false;
+      qualitycut1_STA = false;
+      qualitycut2_STA = false;
       glb_cut1 = false;
       glb_cut2 = false;
       isTag1=false;
       isTag2=false;
       isacceptance1=false;
       isacceptance2=false;
+      isacceptance1_STA=false;
+      isacceptance2_STA=false;
 
       if(id1[j]) qualitycut1 = true;
       if(id2[j]) qualitycut2 = true;
-      if(isTrackerMuArbitrated1[j]&&isTMOneStationTight1[j]) glb_cut1 = true;
-      if(isTrackerMuArbitrated2[j]&&isTMOneStationTight2[j]) glb_cut2 = true;
+      if(StandAloneMuon_id1[j]) qualitycut1_STA = true;
+      if(StandAloneMuon_id2[j]) qualitycut2_STA = true;
       isacceptance1=IsMuonInAcceptance(pt1[j],p1[j],eta1[j]);
       isacceptance2=IsMuonInAcceptance(pt2[j],p2[j],eta2[j]);
+
+////Get the "momentum" of the muons
+b4P->SetXYZM(StandAloneMuon_pt1[j]*cos (StandAloneMuon_phi1[j]),
+             StandAloneMuon_pt1[j]*sin (StandAloneMuon_phi1[j]),
+             StandAloneMuon_pt1[j]*sinh(StandAloneMuon_phi1[j]),
+             MUON_MASS);
+StandAloneMuon_p1[j] = b4P->P();
+b4P->SetXYZM(StandAloneMuon_pt2[j]*cos (StandAloneMuon_phi2[j]),
+             StandAloneMuon_pt2[j]*sin (StandAloneMuon_phi2[j]),
+             StandAloneMuon_pt2[j]*sinh(StandAloneMuon_phi2[j]),
+             MUON_MASS);
+StandAloneMuon_p2[j] = b4P->P();
+////
+
+      isacceptance1_STA=IsMuonInAcceptance(StandAloneMuon_pt1[j],StandAloneMuon_p1[j],StandAloneMuon_eta1[j]);
+      isacceptance2_STA=IsMuonInAcceptance(StandAloneMuon_pt2[j],StandAloneMuon_p2[j],StandAloneMuon_eta2[j]);
+      if(isTrackerMuArbitrated1[j]&&isTMOneStationTight1[j]) glb_cut1 = true;
+      if(isTrackerMuArbitrated2[j]&&isTMOneStationTight2[j]) glb_cut2 = true;
       
       isTag1=IsTag(isacceptance1,isTriggered1[j],qualitycut1,glb_cut1,isTracker1[j]);
       isTag2=IsTag(isacceptance2,isTriggered2[j],qualitycut2,glb_cut2,isTracker2[j]);
@@ -281,81 +334,78 @@ void fitJpsi(bool isDataInput=true){
 
       if(isTag1||isTag2){
         if(isTag1){
-          
           for(int m = 0; m < nMuPtBin; m++){
             if(pt2[j] > MuPtBin[m] && pt2[j] < MuPtBin[m+1]){
               //tracking efficiency
-//              if(outerTrackisNonnull2[j]){
-              if(outerTrackisNonnull2[j] && isacceptance2){
-                hTrkPtAll[m]->Fill(mass[j]);
+              if(isStandAloneMuon2[j] && outerTrackisNonnull2[j] && isacceptance2_STA && (charge1[j]*StandAloneMuon_charge2[j]==-1)){
+//              if(outerTrackisNonnull2[j] && isacceptance2_STA ){
+                hTrkPtAll[m]->Fill(mass[j][1]);
                 hEtaTrkPtAll[m]->Fill(eta2[j]);
-                massTrk=mass[j]; ptTrk = pt2[j]; etaTrk = eta2[j]; passTrk = 0; genTrk = gen[j];
-                if(qualitycut2&&isTracker2[j]) {hTrkPtPass[m]->Fill(mass[j]); passTrk=1; hEtaTrkPtPass[m]->Fill(eta2[j]);
-}
-                else { hTrkPtFail[m]->Fill(mass[j]); hTrkPtFail[m]->Fill(eta2[j]);}
+                massTrk=mass[j][1]; ptTrk = pt2[j]; etaTrk = eta2[j]; passTrk = 0; genTrk = gen[j];
+                if(qualitycut2_STA && isTracker2[j]) {hTrkPtPass[m]->Fill(mass[j][1]); passTrk=1; hEtaTrkPtPass[m]->Fill(eta2[j]);}
+                else { hTrkPtFail[m]->Fill(mass[j][1]); hTrkPtFail[m]->Fill(eta2[j]);}
                 TnPtreeTrk->Fill();
               }//tracking efficinecy over
 
               //muon ID efficiency
-//              if(qualitycut2&&isCalo2[j]&&isacceptance2){
-//              if(qualitycut2&&isTracker2[j]&&isacceptance2){
-              if(qualitycut2&&isTracker2[j]&&isacceptance2&&isCalo2[j]){
-                hMuIdPtAll[m]->Fill(mass[j]);
+              //if(qualitycut2&&isCalo2[j]&&isacceptance2){
+              //if(qualitycut2&&isTracker2[j]&&isacceptance2){
+              if(qualitycut2 && isTracker2[j] && isacceptance2&&isCalo2[j] && (charge1[j]*charge2[j]==-1)){
+                hMuIdPtAll[m]->Fill(mass[j][0]);
                 hEtaMuIdPtAll[m]->Fill(eta2[j]);
-                massID=mass[j]; ptID = pt2[j]; etaID = eta2[j]; passID = 0; genID = gen[j];
-//                if(isTracker2[j]&&isacceptance2){ hMuIdPtPass[m]->Fill(mass[j]); passID=1; hEtaMuIdPtPass[m]->Fill(eta2[j]);}
-                if(glb_cut2){ hMuIdPtPass[m]->Fill(mass[j]); passID=1; hEtaMuIdPtPass[m]->Fill(eta2[j]);}
-                else {hMuIdPtFail[m]->Fill(mass[j]); hEtaMuIdPtFail[m]->Fill(eta2[j]);}
+                massID=mass[j][0]; ptID = pt2[j]; etaID = eta2[j]; passID = 0; genID = gen[j];
+                //if(isTracker2[j]&&isacceptance2){ hMuIdPtPass[m]->Fill(mass[j][0]); passID=1; hEtaMuIdPtPass[m]->Fill(eta2[j]);}
+                if(glb_cut2){ hMuIdPtPass[m]->Fill(mass[j][0]); passID=1; hEtaMuIdPtPass[m]->Fill(eta2[j]);}
+                else {hMuIdPtFail[m]->Fill(mass[j][0]); hEtaMuIdPtFail[m]->Fill(eta2[j]);}
                 TnPtreeID->Fill();
               }//muon ID efficiency over
 
               //trigger efficiency
-              if(qualitycut2&&glb_cut2&&isTracker2[j]&&isacceptance2){
-                hTrigPtAll[m]->Fill(mass[j]);
+              if(qualitycut2 && glb_cut2 && isTracker2[j] && isacceptance2 && (charge1[j]*charge2[j]==-1)){
+                hTrigPtAll[m]->Fill(mass[j][0]);
                 hEtaTrigPtAll[m]->Fill(eta2[j]);
-                massTrg=mass[j]; ptTrg = pt2[j]; etaTrg = eta2[j]; passTrg = 0; genTrg = gen[j];
-                if(isTriggered2[j]) {hTrigPtPass[m]->Fill(mass[j]); passTrg = 1; hEtaTrigPtPass[m]->Fill(eta2[j]);}
-                else { hTrigPtFail[m]->Fill(mass[j]); hEtaTrigPtFail[m]->Fill(eta2[j]);}
+                massTrg=mass[j][0]; ptTrg = pt2[j]; etaTrg = eta2[j]; passTrg = 0; genTrg = gen[j];
+                if(isTriggered2[j]) {hTrigPtPass[m]->Fill(mass[j][0]); passTrg = 1; hEtaTrigPtPass[m]->Fill(eta2[j]);}
+                else { hTrigPtFail[m]->Fill(mass[j][0]); hEtaTrigPtFail[m]->Fill(eta2[j]);}
                 TnPtreeTrg->Fill();
               }//trigger efficiency over
             }//if proper pt bin
           }//loop over pt bins
         }//if isTag1
         else{
-          
           for(int m = 0; m < nMuPtBin; m++){
             if(pt1[j] > MuPtBin[m] && pt1[j] < MuPtBin[m+1]){
               //tracking efficiency
-//              if(outerTrackisNonnull1[j]){
-              if(outerTrackisNonnull1[j] && isacceptance1){
-                massTrk=mass[j]; ptTrk = pt1[j]; etaTrk = eta1[j]; passTrk = 0; genTrk = gen[j];
-                hTrkPtAll[m]->Fill(mass[j]);
+              if(isStandAloneMuon1[j] && outerTrackisNonnull1[j] && isacceptance1_STA && (charge2[j]*StandAloneMuon_charge1[j]==-1)){
+//              if(outerTrackisNonnull1[j] && isacceptance1_STA ){
+                massTrk=mass[j][2]; ptTrk = pt1[j]; etaTrk = eta1[j]; passTrk = 0; genTrk = gen[j];
+                hTrkPtAll[m]->Fill(mass[j][2]);
                 hEtaTrkPtAll[m]->Fill(eta1[j]);
-                if(qualitycut1&&isTracker1[j]) {hTrkPtPass[m]->Fill(mass[j]); passTrk = 1; hEtaTrkPtPass[m]->Fill(eta1[j]);}
-                else { hTrkPtFail[m]->Fill(mass[j]); hEtaTrkPtFail[m]->Fill(eta1[j]);}
+                if(qualitycut1_STA && isTracker1[j]) {hTrkPtPass[m]->Fill(mass[j][2]); passTrk = 1; hEtaTrkPtPass[m]->Fill(eta1[j]);}
+                else { hTrkPtFail[m]->Fill(mass[j][2]); hEtaTrkPtFail[m]->Fill(eta1[j]);}
                 TnPtreeTrk->Fill();
               }//tracking efficinecy over
 
               //muon ID efficiency
-//              if(qualitycut1&&isCalo1[j]&&isacceptance1){
-//              if(qualitycut1&&isTracker1[j]&&isacceptance1){
-              if(qualitycut1&&isTracker1[j]&&isacceptance1&&isCalo1[j]){
-                hMuIdPtAll[m]->Fill(mass[j]);
+              //if(qualitycut1&&isCalo1[j]&&isacceptance1){
+              //if(qualitycut1&&isTracker1[j]&&isacceptance1){
+              if(qualitycut1 && isTracker1[j] && isacceptance1 && isCalo1[j] && (charge1[j]*charge2[j]==-1)){
+                hMuIdPtAll[m]->Fill(mass[j][0]);
                 hEtaMuIdPtAll[m]->Fill(eta1[j]);
-                massID=mass[j]; ptID = pt1[j]; etaID = eta1[j]; passID = 0; genID = gen[j];
-//                if(isTracker1[j]&&isacceptance1) {hMuIdPtPass[m]->Fill(mass[j]); passID = 1; hEtaMuIdPtPass[m]->Fill(eta1[j]);}
-                if(glb_cut1) {hMuIdPtPass[m]->Fill(mass[j]); passID = 1; hEtaMuIdPtPass[m]->Fill(eta1[j]);}
-                else {hMuIdPtFail[m]->Fill(mass[j]); hEtaMuIdPtFail[m]->Fill(eta1[j]);}
+                massID=mass[j][0]; ptID = pt1[j]; etaID = eta1[j]; passID = 0; genID = gen[j];
+                //if(isTracker1[j]&&isacceptance1) {hMuIdPtPass[m]->Fill(mass[j][0]); passID = 1; hEtaMuIdPtPass[m]->Fill(eta1[j]);}
+                if(glb_cut1) {hMuIdPtPass[m]->Fill(mass[j][0]); passID = 1; hEtaMuIdPtPass[m]->Fill(eta1[j]);}
+                else {hMuIdPtFail[m]->Fill(mass[j][0]); hEtaMuIdPtFail[m]->Fill(eta1[j]);}
                 TnPtreeID->Fill();
               }//muon ID efficiency over
 
               //trigger efficiency
-              if(qualitycut1&&glb_cut1&&isTracker1[j]&&isacceptance1){
-                hTrigPtAll[m]->Fill(mass[j]);
+              if(qualitycut1 && glb_cut1 && isTracker1[j] && isacceptance1 && (charge1[j]*charge2[j]==-1)){
+                hTrigPtAll[m]->Fill(mass[j][0]);
                 hEtaTrigPtAll[m]->Fill(eta1[j]);
-                massTrg=mass[j]; ptTrg = pt1[j]; etaTrg = eta1[j]; passTrg = 0; genTrg = gen[j];
-                if(isTriggered1[j]) {hTrigPtPass[m]->Fill(mass[j]); passTrg = 1; hEtaTrigPtPass[m]->Fill(eta1[j]);}
-                else { hTrigPtFail[m]->Fill(mass[j]); hEtaTrigPtFail[m]->Fill(eta1[j]);}
+                massTrg=mass[j][0]; ptTrg = pt1[j]; etaTrg = eta1[j]; passTrg = 0; genTrg = gen[j];
+                if(isTriggered1[j]) {hTrigPtPass[m]->Fill(mass[j][0]); passTrg = 1; hEtaTrigPtPass[m]->Fill(eta1[j]);}
+                else { hTrigPtFail[m]->Fill(mass[j][0]); hEtaTrigPtFail[m]->Fill(eta1[j]);}
                 TnPtreeTrg->Fill();
               }//trigger efficiency over
             }//if proper pt bin
@@ -365,74 +415,70 @@ void fitJpsi(bool isDataInput=true){
       
       if(isTag1||isTag2){
         if(isTag1){
-          
           for(int m = 0; m < nMuEtaBin; m++){
             if(eta2[j] > MuEtaBin[m] && eta2[j] < MuEtaBin[m+1]){
               //tracking efficiency
-//              if(outerTrackisNonnull2[j]){
-              if(outerTrackisNonnull2[j] && isacceptance2){
-                hTrkEtaAll[m]->Fill(mass[j]);
-                massTrk=mass[j]; etaTrk = eta2[j]; etaTrk = eta2[j]; passTrk = 0; genTrk = gen[j];
-                if(qualitycut2&&isTracker2[j]) {hTrkEtaPass[m]->Fill(mass[j]); passTrk=1;}
-                else hTrkEtaFail[m]->Fill(mass[j]);
+              if(isStandAloneMuon2[j] && outerTrackisNonnull2[j] && isacceptance2_STA && (charge1[j]*StandAloneMuon_charge2[j]==-1)){
+                hTrkEtaAll[m]->Fill(mass[j][1]);
+                massTrk=mass[j][1]; etaTrk = eta2[j]; etaTrk = eta2[j]; passTrk = 0; genTrk = gen[j];
+                if(qualitycut2_STA && isTracker2[j]) {hTrkEtaPass[m]->Fill(mass[j][1]); passTrk=1;}
+                else hTrkEtaFail[m]->Fill(mass[j][1]);
                 TnPtreeTrk->Fill();
               }//tracking efficinecy over
 
               //muon ID efficiency
-//              if(qualitycut2&&isCalo2[j]){
-//              if(qualitycut2&&isTracker2[j]&&isacceptance2){
-              if(qualitycut2&&isTracker2[j]&&isacceptance2&&isCalo2[j]){
-                hMuIdEtaAll[m]->Fill(mass[j]);
-                massID=mass[j]; etaID = eta2[j]; etaID = eta2[j]; passID = 0; genID = gen[j];
-//                if(isTracker2[j]&&isacceptance2){ hMuIdEtaPass[m]->Fill(mass[j]); passID=1; }
-                if(glb_cut2){ hMuIdEtaPass[m]->Fill(mass[j]); passID=1; }
-                else hMuIdEtaFail[m]->Fill(mass[j]);
+              //if(qualitycut2&&isCalo2[j]){
+              //if(qualitycut2&&isTracker2[j]&&isacceptance2){
+              if(qualitycut2 && isTracker2[j] && isacceptance2 && isCalo2[j] && (charge1[j]*charge2[j]==-1)){
+                hMuIdEtaAll[m]->Fill(mass[j][0]);
+                massID=mass[j][0]; etaID = eta2[j]; etaID = eta2[j]; passID = 0; genID = gen[j];
+                //if(isTracker2[j]&&isacceptance2){ hMuIdEtaPass[m]->Fill(mass[j][0]); passID=1; }
+                if(glb_cut2){ hMuIdEtaPass[m]->Fill(mass[j][0]); passID=1; }
+                else hMuIdEtaFail[m]->Fill(mass[j][0]);
                 TnPtreeID->Fill();
               }//muon ID efficiency over
 
               //trigger efficiency
-              if(qualitycut2&&glb_cut2&&isTracker2[j]&&isacceptance2){
-                hTrigEtaAll[m]->Fill(mass[j]);
-                massTrg=mass[j]; etaTrg = eta2[j]; etaTrg = eta2[j]; passTrg = 0; genTrg = gen[j];
-                if(isTriggered2[j]) {hTrigEtaPass[m]->Fill(mass[j]); passTrg = 1;}
-                else hTrigEtaFail[m]->Fill(mass[j]);
+              if(qualitycut2 && glb_cut2 && isTracker2[j] && isacceptance2 && (charge1[j]*charge2[j]==-1)){
+                hTrigEtaAll[m]->Fill(mass[j][0]);
+                massTrg=mass[j][0]; etaTrg = eta2[j]; etaTrg = eta2[j]; passTrg = 0; genTrg = gen[j];
+                if(isTriggered2[j]) {hTrigEtaPass[m]->Fill(mass[j][0]); passTrg = 1;}
+                else hTrigEtaFail[m]->Fill(mass[j][0]);
                 TnPtreeTrg->Fill();
               }//trigger efficiency over
             }//if proper eta bin
           }//loop over eta bins
         }//if isTag1
         else{
-          
           for(int m = 0; m < nMuEtaBin; m++){
             if(eta1[j] > MuEtaBin[m] && eta1[j] < MuEtaBin[m+1]){
               //tracking efficiency
- //             if(outerTrackisNonnull1[j]){
-              if(outerTrackisNonnull1[j] && isacceptance1){
-                massTrk=mass[j]; etaTrk = eta1[j]; etaTrk = eta1[j]; passTrk = 0; genTrk = gen[j];
-                hTrkEtaAll[m]->Fill(mass[j]);
-                if(qualitycut1&&isTracker1[j]) {hTrkEtaPass[m]->Fill(mass[j]); passTrk = 1;}
-                else hTrkEtaFail[m]->Fill(mass[j]);
+              if(isStandAloneMuon1[j] && outerTrackisNonnull1[j] && isacceptance1_STA && (charge2[j]*StandAloneMuon_charge1[j]==-1)){
+                massTrk=mass[j][2]; etaTrk = eta1[j]; etaTrk = eta1[j]; passTrk = 0; genTrk = gen[j];
+                hTrkEtaAll[m]->Fill(mass[j][2]);
+                if(qualitycut1_STA && isTracker1[j]) {hTrkEtaPass[m]->Fill(mass[j][2]); passTrk = 1;}
+                else hTrkEtaFail[m]->Fill(mass[j][2]);
                 TnPtreeTrk->Fill();
               }//tracking efficinecy over
 
               //muon ID efficiency
-//              if(qualitycut1&&isCalo1[j]){
-//              if(qualitycut1&&isTracker1[j]&&isacceptance1){
-              if(qualitycut1&&isTracker1[j]&&isacceptance1&&isCalo1[j]){
-                hMuIdEtaAll[m]->Fill(mass[j]);
-                massID=mass[j]; etaID = eta1[j]; etaID = eta1[j]; passID = 0; genID = gen[j];
-//                if(isTracker1[j]&&isacceptance1) {hMuIdEtaPass[m]->Fill(mass[j]); passID = 1;}
-                if(glb_cut1) {hMuIdEtaPass[m]->Fill(mass[j]); passID = 1;}
-                else hMuIdEtaFail[m]->Fill(mass[j]);
+              //if(qualitycut1&&isCalo1[j]){
+              //if(qualitycut1&&isTracker1[j]&&isacceptance1){
+              if(qualitycut1 && isTracker1[j] && isacceptance1 && isCalo1[j] && (charge1[j]*charge2[j]==-1)){
+                hMuIdEtaAll[m]->Fill(mass[j][0]);
+                massID=mass[j][0]; etaID = eta1[j]; etaID = eta1[j]; passID = 0; genID = gen[j];
+                //if(isTracker1[j]&&isacceptance1) {hMuIdEtaPass[m]->Fill(mass[j][0]); passID = 1;}
+                if(glb_cut1) {hMuIdEtaPass[m]->Fill(mass[j][0]); passID = 1;}
+                else hMuIdEtaFail[m]->Fill(mass[j][0]);
                 TnPtreeID->Fill();
               }//muon ID efficiency over
 
               //trigger efficiency
-              if(qualitycut1&&glb_cut1&&isTracker1[j]&&isacceptance1){
-                hTrigEtaAll[m]->Fill(mass[j]);
-                massTrg=mass[j]; etaTrg = eta1[j]; etaTrg = eta1[j]; passTrg = 0; genTrg = gen[j];
-                if(isTriggered1[j]) {hTrigEtaPass[m]->Fill(mass[j]); passTrg = 1;}
-                else hTrigEtaFail[m]->Fill(mass[j]);
+              if(qualitycut1 && glb_cut1 && isTracker1[j] && isacceptance1 && (charge1[j]*charge2[j]==-1)){
+                hTrigEtaAll[m]->Fill(mass[j][0]);
+                massTrg=mass[j][0]; etaTrg = eta1[j]; etaTrg = eta1[j]; passTrg = 0; genTrg = gen[j];
+                if(isTriggered1[j]) {hTrigEtaPass[m]->Fill(mass[j][0]); passTrg = 1;}
+                else hTrigEtaFail[m]->Fill(mass[j][0]);
                 TnPtreeTrg->Fill();
               }//trigger efficiency over
             }//if proper eta bin
@@ -523,33 +569,33 @@ void fitJpsi(bool isDataInput=true){
     npass = hTrigPtPass[i]->Integral(siglow,sighigh)-(hTrigPtPass[i]->Integral(siglow-sigwidth, siglow-1)+hTrigPtPass[i]->Integral(sighigh+1,sighigh+sigwidth));
     EffTrig->SetBinContent(i+1, npass/nall);
     EffTrig->SetBinError(i+1, 0.00001);
-//    cout<<"his trg all : "<<hTrigPtAll[i]->Integral()<<endl;
-//    cout<<"his trg pass: "<<hTrigPtPass[i]->Integral()<<endl;
-//    cout<<"trg all : "<<nall<<endl;
-//    cout<<"trg pass: "<<npass<<endl;
-//    cout<<"eff trg: "<<npass/nall<<endl;
+    //cout<<"his trg all : "<<hTrigPtAll[i]->Integral()<<endl;
+    //cout<<"his trg pass: "<<hTrigPtPass[i]->Integral()<<endl;
+    //cout<<"trg all : "<<nall<<endl;
+    //cout<<"trg pass: "<<npass<<endl;
+    //cout<<"eff trg: "<<npass/nall<<endl;
 
     //Using sideband subtraction
     nall = hTrkPtAll[i]->Integral(siglow,sighigh)-(hTrkPtAll[i]->Integral(siglow-sigwidth, siglow-1)+hTrkPtAll[i]->Integral(sighigh+1,sighigh+sigwidth));
     npass = hTrkPtPass[i]->Integral(siglow,sighigh)-(hTrkPtPass[i]->Integral(siglow-sigwidth, siglow-1)+hTrkPtPass[i]->Integral(sighigh+1,sighigh+sigwidth));
     EffTrk->SetBinContent(i+1, npass/nall);
     EffTrk->SetBinError(i+1, 0.00001);
-//    cout<<"his trk all : "<<hTrkPtAll[i]->Integral()<<endl;
-//    cout<<"his trk pass: "<<hTrkPtPass[i]->Integral()<<endl;
-//    cout<<"trk all : "<<nall<<endl;
-//    cout<<"trk pass: "<<npass<<endl;
-//    cout<<"eff trk: "<<npass/nall<<endl;
+    //cout<<"his trk all : "<<hTrkPtAll[i]->Integral()<<endl;
+    //cout<<"his trk pass: "<<hTrkPtPass[i]->Integral()<<endl;
+    //cout<<"trk all : "<<nall<<endl;
+    //cout<<"trk pass: "<<npass<<endl;
+    //cout<<"eff trk: "<<npass/nall<<endl;
 
     //Using sideband subtraction
     nall = hMuIdPtAll[i]->Integral(siglow,sighigh)-(hMuIdPtAll[i]->Integral(siglow-sigwidth, siglow-1)+hMuIdPtAll[i]->Integral(sighigh+1,sighigh+sigwidth));
     npass = hMuIdPtPass[i]->Integral(siglow,sighigh)-(hMuIdPtPass[i]->Integral(siglow-sigwidth, siglow-1)+hMuIdPtPass[i]->Integral(sighigh+1,sighigh+sigwidth));
     EffMuId->SetBinContent(i+1, npass/nall);
     EffMuId->SetBinError(i+1, 0.00001);
-//    cout<<"his id all : "<<hMuIdPtAll[i]->Integral()<<endl;
-//    cout<<"his id pass: "<<hMuIdPtPass[i]->Integral()<<endl;
-//    cout<<"id all : "<<nall<<endl;
-//    cout<<"id pass: "<<npass<<endl;
-//    cout<<"eff id: "<<npass/nall<<endl;
+    //cout<<"his id all : "<<hMuIdPtAll[i]->Integral()<<endl;
+    //cout<<"his id pass: "<<hMuIdPtPass[i]->Integral()<<endl;
+    //cout<<"id all : "<<nall<<endl;
+    //cout<<"id pass: "<<npass<<endl;
+    //cout<<"eff id: "<<npass/nall<<endl;
   }
   EffTrig->Draw("pe");
   EffTrk->Draw("pe same");

@@ -3,7 +3,7 @@
 #define _XBFRAMEFORMAT_H_
 
 #define MAX_XB 8192
-#define MAX_MUON 64
+#define MAX_MUON 256
 #define MAX_TRACK 4096 
 #define MAX_GEN 4096 
 #define MAX_BX 128
@@ -159,34 +159,53 @@ class VtxInfoBranches { //{{{
         double 	phi          [ MAX_MUON];
         bool    isTrackerMuon[ MAX_MUON];
         bool    isGlobalMuon [ MAX_MUON];
-        double  normchi2     [ MAX_MUON];
-        int	    i_striphit   [ MAX_MUON];
-        int	    i_pixelhit   [ MAX_MUON];
-        int	    g_striphit   [ MAX_MUON];
-        int	    g_pixelhit   [ MAX_MUON];
-        int     i_nStripLayer[ MAX_MUON];
-        int     i_nPixelLayer[ MAX_MUON];
-        double	i_chi2       [ MAX_MUON];
-        double	i_ndf        [ MAX_MUON];
-        double	g_chi2       [ MAX_MUON];
-        double	g_ndf        [ MAX_MUON];
-        int	    nmuhit       [ MAX_MUON];
-        double	d0           [ MAX_MUON];
-        double	dz           [ MAX_MUON];
-        double	dzPV         [ MAX_MUON];
-        double	dxyPV        [ MAX_MUON];
-        int	    fpbarrelhit  [ MAX_MUON];
-        int	    fpendcaphit  [ MAX_MUON];
         int	    muqual       [ MAX_MUON];
         double  iso_trk      [ MAX_MUON];
         double  iso_ecal     [ MAX_MUON];
         double  iso_hcal     [ MAX_MUON];
         int     type         [ MAX_MUON];
         double  n_matches    [ MAX_MUON];
+        bool    TMOneStationTight [MAX_MUON];
+        bool    TrackerMuonArbitrated [MAX_MUON];
         int     isGoodCand   [ MAX_MUON];
         int     geninfo_index[ MAX_MUON];
-        bool    outerTrackisNonnull [MAX_MUON];
+        bool    isNeededMuon[MAX_MUON];//for intermediate Bfinder usage, not stored in output
+        bool    passMuID [MAX_MUON];
 
+        bool    isStandAloneMuon            [ MAX_MUON];
+        int 	StandAloneMuon_charge       [ MAX_MUON];
+        double 	StandAloneMuon_pt           [ MAX_MUON];
+        double	StandAloneMuon_eta          [ MAX_MUON];
+        double 	StandAloneMuon_phi          [ MAX_MUON];
+        double	StandAloneMuon_d0           [ MAX_MUON];
+        double	StandAloneMuon_dz           [ MAX_MUON];
+        double	StandAloneMuon_dzPV         [ MAX_MUON];
+        double	StandAloneMuon_dxyPV        [ MAX_MUON];
+
+        bool    outerTrackisNonnull  [MAX_MUON];
+        bool    innerTrackisNonnull  [MAX_MUON];
+        bool    globalTrackisNonnull [MAX_MUON];
+        int     innerTrackQuality    [MAX_MUON];
+        double  normchi2     [ MAX_MUON];
+        int	    i_striphit   [ MAX_MUON];
+        int	    i_pixelhit   [ MAX_MUON];
+        int     i_nStripLayer[ MAX_MUON];
+        int     i_nPixelLayer[ MAX_MUON];
+        double	i_chi2       [ MAX_MUON];
+        double	i_ndf        [ MAX_MUON];
+        int	    fpbarrelhit  [ MAX_MUON];
+        int	    fpendcaphit  [ MAX_MUON];
+        double	d0           [ MAX_MUON];
+        double	dz           [ MAX_MUON];
+        double	dzPV         [ MAX_MUON];
+        double	dxyPV        [ MAX_MUON];
+        double	g_chi2       [ MAX_MUON];
+        double	g_ndf        [ MAX_MUON];
+        int	    g_striphit   [ MAX_MUON];
+        int	    g_pixelhit   [ MAX_MUON];
+        int	    nmuhit       [ MAX_MUON];
+
+        bool    isTriggered  [MAX_MUON];
         int	    MuTrgMatchPathSize;
         std::vector<std::vector<double > > *MuTrgMatchTrgObjE;
         std::vector<std::vector<double > > *MuTrgMatchTrgObjPt;
@@ -203,34 +222,52 @@ class VtxInfoBranches { //{{{
             root->Branch("MuonInfo.phi"           , phi           , "MuonInfo.phi[MuonInfo.size]/D"	);
             root->Branch("MuonInfo.isTrackerMuon" , isTrackerMuon , "MuonInfo.isTrackerMuon[MuonInfo.size]/O");
             root->Branch("MuonInfo.isGlobalMuon"  , isGlobalMuon  , "MuonInfo.isGlobalMuon[MuonInfo.size]/O");
-            root->Branch("MuonInfo.normchi2"      , normchi2      , "MuonInfo.normchi2[MuonInfo.size]/D");
-            root->Branch("MuonInfo.i_striphit"    , i_striphit    , "MuonInfo.i_striphit[MuonInfo.size]/I"	);
-            root->Branch("MuonInfo.i_pixelhit"    , i_pixelhit    , "MuonInfo.i_pixelhit[MuonInfo.size]/I"	);
-            root->Branch("MuonInfo.i_nStripLayer" , i_nStripLayer , "MuonInfo.i_nStripLayer[MuonInfo.size]/I"	);
-            root->Branch("MuonInfo.i_nPixelLayer" , i_nPixelLayer , "MuonInfo.i_nPixelLayer[MuonInfo.size]/I"	);
-            root->Branch("MuonInfo.g_striphit"    , g_striphit    , "MuonInfo.g_striphit[MuonInfo.size]/I"	);
-            root->Branch("MuonInfo.g_pixelhit"    , g_pixelhit    , "MuonInfo.g_pixelhit[MuonInfo.size]/I"	);
-            root->Branch("MuonInfo.i_chi2"        , i_chi2        , "MuonInfo.i_chi2[MuonInfo.size]/D"	);
-            root->Branch("MuonInfo.i_ndf"         , i_ndf         , "MuonInfo.i_ndf[MuonInfo.size]/D"	);
-            root->Branch("MuonInfo.g_chi2"        , g_chi2        , "MuonInfo.g_chi2[MuonInfo.size]/D"	);
-            root->Branch("MuonInfo.g_ndf"         , g_ndf         , "MuonInfo.g_ndf[MuonInfo.size]/D"	);
-            root->Branch("MuonInfo.nmuhit"        , nmuhit        , "MuonInfo.nmuhit[MuonInfo.size]/I"	);
-            root->Branch("MuonInfo.d0"            , d0            , "MuonInfo.d0[MuonInfo.size]/D"		);
-            root->Branch("MuonInfo.dz"            , dz            , "MuonInfo.dz[MuonInfo.size]/D"		);
-            root->Branch("MuonInfo.dzPV"          , dzPV          , "MuonInfo.dzPV[MuonInfo.size]/D"		);
-            root->Branch("MuonInfo.dxyPV"         , dxyPV         , "MuonInfo.dxyPV[MuonInfo.size]/D"		);
-            root->Branch("MuonInfo.fpbarrelhit"   , fpbarrelhit   , "MuonInfo.fpbarrelhit[MuonInfo.size]/I");
-            root->Branch("MuonInfo.fpendcaphit"   , fpendcaphit   , "MuonInfo.fpendcaphit[MuonInfo.size]/I");
             root->Branch("MuonInfo.muqual"        , muqual        , "MuonInfo.muqual[MuonInfo.size]/I"	);
             root->Branch("MuonInfo.iso_trk"       , iso_trk       , "MuonInfo.iso_trk[MuonInfo.size]/D");
             root->Branch("MuonInfo.iso_ecal"      , iso_ecal      , "MuonInfo.iso_ecal[MuonInfo.size]/D");
             root->Branch("MuonInfo.iso_hcal"      , iso_hcal      , "MuonInfo.iso_hcal[MuonInfo.size]/D");
             root->Branch("MuonInfo.type"          , type         ,  "MuonInfo.type[MuonInfo.size]/I"   );
             root->Branch("MuonInfo.n_matches"     , n_matches     , "MuonInfo.n_matches[MuonInfo.size]/D");
+            root->Branch("MuonInfo.TMOneStationTight" ,TMOneStationTight, "MuonInfo.TMOneStationTight[MuonInfo.size]/O");
+            root->Branch("MuonInfo.TrackerMuonArbitrated" ,TrackerMuonArbitrated, "MuonInfo.TrackerMuonArbitrated[MuonInfo.size]/O");
             root->Branch("MuonInfo.isGoodCand"    , isGoodCand    , "MuonInfo.isGoodCand[MuonInfo.size]/I");
             root->Branch("MuonInfo.geninfo_index"    , geninfo_index    , "MuonInfo.geninfo_index[MuonInfo.size]/I");
-            root->Branch("MuonInfo.outerTrackisNonnull" ,outerTrackisNonnull, "MuonInfo.outerTrackisNonnull[MuonInfo.size]/O");
+            root->Branch("MuonInfo.passMuID" ,passMuID, "MuonInfo.passMuID[MuonInfo.size]/O");
 
+            root->Branch("MuonInfo.isStandAloneMuon"             , isStandAloneMuon             , "MuonInfo.isStandAloneMuon[MuonInfo.size]/O"		);
+            root->Branch("MuonInfo.StandAloneMuon_charge"        , StandAloneMuon_charge        , "MuonInfo.StandAloneMuon_charge[MuonInfo.size]/I"	);
+            root->Branch("MuonInfo.StandAloneMuon_pt"            , StandAloneMuon_pt            , "MuonInfo.StandAloneMuon_pt[MuonInfo.size]/D"		);
+            root->Branch("MuonInfo.StandAloneMuon_eta"           , StandAloneMuon_eta           , "MuonInfo.StandAloneMuon_eta[MuonInfo.size]/D"	);
+            root->Branch("MuonInfo.StandAloneMuon_phi"           , StandAloneMuon_phi           , "MuonInfo.StandAloneMuon_phi[MuonInfo.size]/D"	);
+            root->Branch("MuonInfo.StandAloneMuon_d0"            , StandAloneMuon_d0            , "MuonInfo.StandAloneMuon_d0[MuonInfo.size]/D"		);
+            root->Branch("MuonInfo.StandAloneMuon_dz"            , StandAloneMuon_dz            , "MuonInfo.StandAloneMuon_dz[MuonInfo.size]/D"		);
+            root->Branch("MuonInfo.StandAloneMuon_dzPV"          , StandAloneMuon_dzPV          , "MuonInfo.StandAloneMuon_dzPV[MuonInfo.size]/D"   );
+            root->Branch("MuonInfo.StandAloneMuon_dxyPV"         , StandAloneMuon_dxyPV         , "MuonInfo.StandAloneMuon_dxyPV[MuonInfo.size]/D"	);
+
+            root->Branch("MuonInfo.outerTrackisNonnull" ,outerTrackisNonnull, "MuonInfo.outerTrackisNonnull[MuonInfo.size]/O");
+            root->Branch("MuonInfo.innerTrackisNonnull" ,innerTrackisNonnull, "MuonInfo.innerTrackisNonnull[MuonInfo.size]/O");
+            root->Branch("MuonInfo.globalTrackisNonnull" ,globalTrackisNonnull, "MuonInfo.globalTrackisNonnull[MuonInfo.size]/O");
+            root->Branch("MuonInfo.innerTrackQuality"    , innerTrackQuality    , "MuonInfo.innerTrackQuality[MuonInfo.size]/I"	);
+            root->Branch("MuonInfo.normchi2"      , normchi2      , "MuonInfo.normchi2[MuonInfo.size]/D");
+            root->Branch("MuonInfo.i_striphit"    , i_striphit    , "MuonInfo.i_striphit[MuonInfo.size]/I"	);
+            root->Branch("MuonInfo.i_pixelhit"    , i_pixelhit    , "MuonInfo.i_pixelhit[MuonInfo.size]/I"	);
+            root->Branch("MuonInfo.i_nStripLayer" , i_nStripLayer , "MuonInfo.i_nStripLayer[MuonInfo.size]/I"	);
+            root->Branch("MuonInfo.i_nPixelLayer" , i_nPixelLayer , "MuonInfo.i_nPixelLayer[MuonInfo.size]/I"	);
+            root->Branch("MuonInfo.i_chi2"        , i_chi2        , "MuonInfo.i_chi2[MuonInfo.size]/D"	);
+            root->Branch("MuonInfo.i_ndf"         , i_ndf         , "MuonInfo.i_ndf[MuonInfo.size]/D"	);
+            root->Branch("MuonInfo.fpbarrelhit"   , fpbarrelhit   , "MuonInfo.fpbarrelhit[MuonInfo.size]/I");
+            root->Branch("MuonInfo.fpendcaphit"   , fpendcaphit   , "MuonInfo.fpendcaphit[MuonInfo.size]/I");
+            root->Branch("MuonInfo.d0"            , d0            , "MuonInfo.d0[MuonInfo.size]/D"		);
+            root->Branch("MuonInfo.dz"            , dz            , "MuonInfo.dz[MuonInfo.size]/D"		);
+            root->Branch("MuonInfo.dzPV"          , dzPV          , "MuonInfo.dzPV[MuonInfo.size]/D"		);
+            root->Branch("MuonInfo.dxyPV"         , dxyPV         , "MuonInfo.dxyPV[MuonInfo.size]/D"		);
+            root->Branch("MuonInfo.g_chi2"        , g_chi2        , "MuonInfo.g_chi2[MuonInfo.size]/D"	);
+            root->Branch("MuonInfo.g_ndf"         , g_ndf         , "MuonInfo.g_ndf[MuonInfo.size]/D"	);
+            root->Branch("MuonInfo.g_striphit"    , g_striphit    , "MuonInfo.g_striphit[MuonInfo.size]/I"	);
+            root->Branch("MuonInfo.g_pixelhit"    , g_pixelhit    , "MuonInfo.g_pixelhit[MuonInfo.size]/I"	);
+            root->Branch("MuonInfo.nmuhit"        , nmuhit        , "MuonInfo.nmuhit[MuonInfo.size]/I"	);
+
+            root->Branch("MuonInfo.isTriggered" ,isTriggered, "MuonInfo.isTriggered[MuonInfo.size]/O");
             root->Branch("MuonInfo.MuTrgMatchPathSize", &MuTrgMatchPathSize, "MuonInfo.MuTrgMatchPathSize/I");
             root->Branch("MuonInfo.MuTrgMatchTrgObjE", "std::vector<std::vector<double>>", &MuTrgMatchTrgObjE);
             root->Branch("MuonInfo.MuTrgMatchTrgObjPt","std::vector<std::vector<double>>", &MuTrgMatchTrgObjPt);
@@ -248,34 +285,52 @@ class VtxInfoBranches { //{{{
             root->SetBranchAddress("MuonInfo.phi"           , phi            );
             root->SetBranchAddress("MuonInfo.isTrackerMuon" , isTrackerMuon);
             root->SetBranchAddress("MuonInfo.isGlobalMuon"  , isGlobalMuon);
-            root->SetBranchAddress("MuonInfo.normchi2"      , normchi2);
-            root->SetBranchAddress("MuonInfo.i_striphit"    , i_striphit	);
-            root->SetBranchAddress("MuonInfo.i_pixelhit"    , i_pixelhit	);
-            root->SetBranchAddress("MuonInfo.i_nStripLayer" , i_nStripLayer);
-            root->SetBranchAddress("MuonInfo.i_nPixelLayer" , i_nPixelLayer);
-            root->SetBranchAddress("MuonInfo.g_striphit"    , g_striphit	);
-            root->SetBranchAddress("MuonInfo.g_pixelhit"    , g_pixelhit	);
-            root->SetBranchAddress("MuonInfo.i_chi2"        , i_chi2		);
-            root->SetBranchAddress("MuonInfo.i_ndf"         , i_ndf		);
-            root->SetBranchAddress("MuonInfo.g_chi2"        , g_chi2		);
-            root->SetBranchAddress("MuonInfo.g_ndf"         , g_ndf		);
-            root->SetBranchAddress("MuonInfo.nmuhit"        , nmuhit		);
-            root->SetBranchAddress("MuonInfo.d0"            , d0             );
-            root->SetBranchAddress("MuonInfo.dz"            , dz             );
-            root->SetBranchAddress("MuonInfo.dzPV"          , dzPV             );
-            root->SetBranchAddress("MuonInfo.dxyPV"         , dxyPV             );
-            root->SetBranchAddress("MuonInfo.fpbarrelhit"   , fpbarrelhit    );
-            root->SetBranchAddress("MuonInfo.fpendcaphit"   , fpendcaphit    );
             root->SetBranchAddress("MuonInfo.muqual"        , muqual         );
             root->SetBranchAddress("MuonInfo.iso_trk"       , iso_trk);
             root->SetBranchAddress("MuonInfo.iso_ecal"      , iso_ecal);
             root->SetBranchAddress("MuonInfo.iso_hcal"      , iso_hcal);
             root->SetBranchAddress("MuonInfo.type"          , type          );
             root->SetBranchAddress("MuonInfo.n_matches"     , n_matches);
+            root->SetBranchAddress("MuonInfo.TMOneStationTight" , TMOneStationTight);
+            root->SetBranchAddress("MuonInfo.TrackerMuonArbitrated" , TrackerMuonArbitrated);
             root->SetBranchAddress("MuonInfo.isGoodCand"    , isGoodCand);
             root->SetBranchAddress("MuonInfo.geninfo_index"    , geninfo_index);
-            root->SetBranchAddress("MuonInfo.outerTrackisNonnull"    , outerTrackisNonnull);
+            root->SetBranchAddress("MuonInfo.passMuID" , passMuID);
 
+            root->SetBranchAddress("MuonInfo.isStandAloneMuon"             , isStandAloneMuon              );
+            root->SetBranchAddress("MuonInfo.StandAloneMuon_charge"        , StandAloneMuon_charge         );
+            root->SetBranchAddress("MuonInfo.StandAloneMuon_pt"            , StandAloneMuon_pt             );
+            root->SetBranchAddress("MuonInfo.StandAloneMuon_eta"           , StandAloneMuon_eta            );
+            root->SetBranchAddress("MuonInfo.StandAloneMuon_phi"           , StandAloneMuon_phi            );
+            root->SetBranchAddress("MuonInfo.StandAloneMuon_d0"            , StandAloneMuon_d0             );
+            root->SetBranchAddress("MuonInfo.StandAloneMuon_dz"            , StandAloneMuon_dz             );
+            root->SetBranchAddress("MuonInfo.StandAloneMuon_dzPV"          , StandAloneMuon_dzPV           );
+            root->SetBranchAddress("MuonInfo.StandAloneMuon_dxyPV"         , StandAloneMuon_dxyPV          );
+
+            root->SetBranchAddress("MuonInfo.outerTrackisNonnull"    , outerTrackisNonnull);
+            root->SetBranchAddress("MuonInfo.innerTrackisNonnull"    , innerTrackisNonnull);
+            root->SetBranchAddress("MuonInfo.globalTrackisNonnull"    , globalTrackisNonnull);
+            root->SetBranchAddress("MuonInfo.innerTrackQuality"    , innerTrackQuality	);
+            root->SetBranchAddress("MuonInfo.normchi2"      , normchi2);
+            root->SetBranchAddress("MuonInfo.i_striphit"    , i_striphit	);
+            root->SetBranchAddress("MuonInfo.i_pixelhit"    , i_pixelhit	);
+            root->SetBranchAddress("MuonInfo.i_nStripLayer" , i_nStripLayer);
+            root->SetBranchAddress("MuonInfo.i_nPixelLayer" , i_nPixelLayer);
+            root->SetBranchAddress("MuonInfo.i_chi2"        , i_chi2		);
+            root->SetBranchAddress("MuonInfo.i_ndf"         , i_ndf		);
+            root->SetBranchAddress("MuonInfo.fpbarrelhit"   , fpbarrelhit    );
+            root->SetBranchAddress("MuonInfo.fpendcaphit"   , fpendcaphit    );
+            root->SetBranchAddress("MuonInfo.d0"            , d0             );
+            root->SetBranchAddress("MuonInfo.dz"            , dz             );
+            root->SetBranchAddress("MuonInfo.dzPV"          , dzPV             );
+            root->SetBranchAddress("MuonInfo.dxyPV"         , dxyPV             );
+            root->SetBranchAddress("MuonInfo.g_chi2"        , g_chi2		);
+            root->SetBranchAddress("MuonInfo.g_ndf"         , g_ndf		);
+            root->SetBranchAddress("MuonInfo.g_striphit"    , g_striphit	);
+            root->SetBranchAddress("MuonInfo.g_pixelhit"    , g_pixelhit	);
+            root->SetBranchAddress("MuonInfo.nmuhit"        , nmuhit		);
+
+            root->SetBranchAddress("MuonInfo.isTriggered" , isTriggered);
             MuTrgMatchTrgObjE = new std::vector<std::vector<double > >();
             MuTrgMatchTrgObjPt= new std::vector<std::vector<double > >();                                                                                                                                   
             MuTrgMatchTrgObjEta= new std::vector<std::vector<double > >();
@@ -285,7 +340,6 @@ class VtxInfoBranches { //{{{
             root->SetBranchAddress("MuonInfo.MuTrgMatchTrgObjPt", &MuTrgMatchTrgObjPt);
             root->SetBranchAddress("MuonInfo.MuTrgMatchTrgObjEta", &MuTrgMatchTrgObjEta);
             root->SetBranchAddress("MuonInfo.MuTrgMatchTrgObjPhi", &MuTrgMatchTrgObjPhi);
-
         }//}}}
 
 };//}}}
@@ -314,6 +368,7 @@ class TrackInfoBranches{//{{{
         double	dxyPV        [ MAX_TRACK];
         int     isGoodCand   [ MAX_TRACK];
         int     geninfo_index[ MAX_TRACK];
+        int     trackQuality[ MAX_TRACK];
 
         void regTree(TTree *root){//{{{
             root->Branch("TrackInfo.size"           ,&size		    ,"TrackInfo.size/I"			);
@@ -337,6 +392,7 @@ class TrackInfoBranches{//{{{
             root->Branch("TrackInfo.dxyPV"          ,dxyPV          ,"TrackInfo.dxyPV[TrackInfo.size]/D"		);
             root->Branch("TrackInfo.isGoodCand"     ,isGoodCand     ,"TrackInfo.isGoodCand[TrackInfo.size]/I");
             root->Branch("TrackInfo.geninfo_index"     ,geninfo_index     ,"TrackInfo.geninfo_index[TrackInfo.size]/I");
+            root->Branch("TrackInfo.trackQuality"     ,trackQuality     ,"TrackInfo.trackQuality[TrackInfo.size]/I");
         }//}}}
 
         void setbranchadd(TTree *root){//{{{
@@ -361,6 +417,7 @@ class TrackInfoBranches{//{{{
             root->SetBranchAddress("TrackInfo.dxyPV"       , dxyPV       );
             root->SetBranchAddress("TrackInfo.isGoodCand"  , isGoodCand  );
             root->SetBranchAddress("TrackInfo.geninfo_index"  , geninfo_index  );
+            root->SetBranchAddress("TrackInfo.trackQuality"  , trackQuality  );
         }//}}}
 };//}}}
 

@@ -19,8 +19,12 @@
 #include <TString.h>
 #include "format.h"
 
-#define MAX_MUON 64
 #define MUON_MASS   0.10565837
+#define PION_MASS   0.13957018
+#define KAON_MASS   0.493677
+#define KSHORT_MASS 0.497614
+#define KSTAR_MASS  0.89594
+#define PHI_MASS    1.019455
 #define JPSI_MASS   3.096916
 
 TLatex myLatex(){

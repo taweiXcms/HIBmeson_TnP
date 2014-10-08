@@ -16,20 +16,16 @@
 #include <RooCategory.h>
 #include <RooSimultaneous.h>
 
-bool isDataInput = true;
-//bool isDataInput = false;
+//bool isDataInput = true;
+bool isDataInput = false;
 
 void FitTnP_sample(){
 
-  TFile*finput=new TFile("../../0913_DefaultMuId_TnPfiles/foutputData.root","read");
-  TString plotfolder = "0913_DefaultMuId_PlotsBinFitData";
-//  TFile*finput=new TFile("../../0913_NewMuId_TnPfiles/foutputData.root","read");
-//  TString plotfolder = "0913_NewMuId_PlotsBinFitData";
+  TFile*finput=new TFile("../../0930_DefaultMuId_TnPfiles/foutputData.root","read");
+  TString plotfolder = "0930_DefaultMuId_PlotsBinFitData";
   if(!isDataInput){
-    finput=new TFile("../../0913_DefaultMuId_TnPfiles/foutputMC.root","read");
-    plotfolder = "0913_DefaultMuId_PlotsBinFitMC";
-//    finput=new TFile("../../0913_NewMuId_TnPfiles/foutputMC.root","read");
-//    plotfolder = "0913_NewMuId_PlotsBinFitMC";
+    finput=new TFile("../../0930_DefaultMuId_TnPfiles/foutputMC.root","read");
+    plotfolder = "0930_DefaultMuId_PlotsBinFitMC";
   }
   finput->cd();
 
@@ -48,10 +44,10 @@ void FitTnP_sample(){
   double mumuhighMuId[nMuPtBin] = {3.5, 3.5, 3.5, 3.5, 3.5, 3.5, 3.5};
   double mumulowtrg[nMuPtBin] = {2.6, 2.6, 2.6, 2.6, 2.6, 2.6, 2.6};
   double mumuhightrg[nMuPtBin] = {3.5, 3.5, 3.5, 3.5, 3.5, 3.5, 3.5};
-  //double mumulowtrk[nMuPtBin] = {2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0};
-  //double mumuhightrk[nMuPtBin] = {5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0};
-  double mumulowtrk[nMuPtBin] = {2.6, 2.6, 2.6, 2.6, 2.6, 2.6, 2.6};
-  double mumuhightrk[nMuPtBin] = {3.5, 3.5, 3.5, 3.5, 3.5, 3.5, 3.5};
+  double mumulowtrk[nMuPtBin] = {2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0};
+  double mumuhightrk[nMuPtBin] = {5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0};
+  //double mumulowtrk[nMuPtBin] = {2.6, 2.6, 2.6, 2.6, 2.6, 2.6, 2.6};
+  //double mumuhightrk[nMuPtBin] = {3.5, 3.5, 3.5, 3.5, 3.5, 3.5, 3.5};
   
   //Crystall Ball parameters
   ////for trigger efficiency
@@ -105,7 +101,8 @@ void FitTnP_sample(){
   double Cheb_MuId_Pt_p1_Fail_mean[nMuPtBin] = {-0.5, -0.7, 0., 0., 0., 0., 0.};
   double Cheb_MuId_Pt_p1_Fail_min[nMuPtBin] = {-1., -1., -1., -1., -1., -1., -1.};
   double Cheb_MuId_Pt_p1_Fail_max[nMuPtBin] = {+1., +1., +1., +1., +1., +1., +1.};
-  double Cheb_MuId_Pt_p2_Fail_mean[nMuPtBin] = {-0.1, 0.15, 0., 0., 0., 0., 0.};
+  double Cheb_MuId_Pt_p2_Fail_mean[nMuPtBin] = {-0.1, 0.15, 0.2, 0., 0., 0., 0.};
+//  double Cheb_MuId_Pt_p2_Fail_mean[nMuPtBin] = {-0.1, 0.15, 0., 0., 0., 0., 0.};//For old 0802 data muid
   double Cheb_MuId_Pt_p2_Fail_min[nMuPtBin] = {-1., -1., -1., -1., -1., -1., -1.};
   double Cheb_MuId_Pt_p2_Fail_max[nMuPtBin] = {+1., +1., +1., +1., +1., +1., +1.};
 
@@ -182,7 +179,7 @@ void FitTnP_sample(){
 
   //get pt histogram
   for(int i = 0; i < nMuPtBin; i++)
-//  for(int i = 0; i < 1; i++)
+//  for(int i = 1; i < 2; i++)
 //  for(int i = 0; i < 3; i++)
   {
     RooRealVar masstrk("masstrk", "masstrk", mumulowtrk[i], mumuhightrk[i]);
@@ -416,12 +413,9 @@ void FitTnP_sample(){
     simTrgPdf.addPdf(model_CB_exp_Fail, "Fail");
 
 	cout<<"Fitting pt binning: "<<i<<endl;
-    simTrkPdf.fitTo(  dataTrkAllset, Extended(true), NumCPU(numCPU), PrintLevel(quiet?-1:1), Warnings(!quiet));
-    simTrkPdf.fitTo(  dataTrkAllset, Extended(true), NumCPU(numCPU), PrintLevel(quiet?-1:1), Warnings(!quiet));
-    simMuIdPdf.fitTo(dataMuIdAllset, Extended(true), NumCPU(numCPU), PrintLevel(quiet?-1:1), Warnings(!quiet));
-    simMuIdPdf.fitTo(dataMuIdAllset, Extended(true), NumCPU(numCPU), PrintLevel(quiet?-1:1), Warnings(!quiet));
-    simTrgPdf.fitTo(  dataTrgAllset, Extended(true), NumCPU(numCPU), PrintLevel(quiet?-1:1), Warnings(!quiet));
-    simTrgPdf.fitTo(  dataTrgAllset, Extended(true), NumCPU(numCPU), PrintLevel(quiet?-1:1), Warnings(!quiet));
+    simTrkPdf.fitTo(  dataTrkAllset, Extended(true), NumCPU(numCPU), PrintLevel(quiet?-1:1), Warnings(!quiet));    simTrkPdf.fitTo(  dataTrkAllset, Extended(true), NumCPU(numCPU), PrintLevel(quiet?-1:1), Warnings(!quiet));
+    simMuIdPdf.fitTo(dataMuIdAllset, Extended(true), NumCPU(numCPU), PrintLevel(quiet?-1:1), Warnings(!quiet));    simMuIdPdf.fitTo(dataMuIdAllset, Extended(true), NumCPU(numCPU), PrintLevel(quiet?-1:1), Warnings(!quiet));
+    simTrgPdf.fitTo(  dataTrgAllset, Extended(true), NumCPU(numCPU), PrintLevel(quiet?-1:1), Warnings(!quiet));    simTrgPdf.fitTo(  dataTrgAllset, Extended(true), NumCPU(numCPU), PrintLevel(quiet?-1:1), Warnings(!quiet));
 
     //draw tracking efficiency mass distribution
     ////pass

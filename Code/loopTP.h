@@ -1,0 +1,636 @@
+#include <TTree.h>
+
+//#define MAX_XB 8192
+#define MAX_XB 20000//the maximum of ->SetBranchAddress can not exceed 40000~50000 but you can still do ->Branch
+//#define MAX_XB 100000
+#define MAX_MUON 256
+#define MAX_TRACK 4096 //default 2048
+#define MAX_GEN 4096 //default 2048
+
+int   Run;
+int   Event;
+int   size;
+
+//jpsi
+double mass[MAX_XB][3];
+double pt[MAX_XB][3];
+double eta[MAX_XB][3];
+double y[MAX_XB][3];
+double phi[MAX_XB][3];
+//muon
+int   charge1[MAX_XB];
+int   charge2[MAX_XB];
+bool   isTracker1[MAX_XB];
+bool   isTracker2[MAX_XB];
+double   pt1[MAX_XB];
+double   pt2[MAX_XB];
+double   p1[MAX_XB];
+double   p2[MAX_XB];
+double   eta1[MAX_XB];
+double   eta2[MAX_XB];
+double   phi1[MAX_XB];
+double   phi2[MAX_XB];
+int   id1[MAX_XB];
+int   id2[MAX_XB];
+int   gen[MAX_XB];
+double genpt[MAX_XB];
+bool   isGlobal1[MAX_XB];
+bool   isGlobal2[MAX_XB];
+bool   isTriggered1[MAX_XB];
+bool   isTriggered2[MAX_XB];
+bool   isCalo1[MAX_XB];
+bool   isCalo2[MAX_XB];
+bool  outerTrackisNonnull1[MAX_XB];
+bool  outerTrackisNonnull2[MAX_XB];
+bool  isTrackerMuArbitrated1[MAX_XB];
+bool  isTrackerMuArbitrated2[MAX_XB];
+bool  isTMOneStationTight1[MAX_XB];
+bool  isTMOneStationTight2[MAX_XB];
+int nPixel1[MAX_XB];
+int nPixel2[MAX_XB];
+int nTracker1[MAX_XB];
+int nTracker2[MAX_XB];
+double dz1[MAX_XB];
+double dz2[MAX_XB];
+double dxy1[MAX_XB];
+double dxy2[MAX_XB];
+double chisq1[MAX_XB];
+double chisq2[MAX_XB];
+int innerTrackQuality1[MAX_XB];
+int innerTrackQuality2[MAX_XB];
+
+bool    isStandAloneMuon1            [MAX_XB];
+int     StandAloneMuon_charge1       [MAX_XB];
+double  StandAloneMuon_pt1           [MAX_XB];
+double  StandAloneMuon_p1            [MAX_XB];
+double  StandAloneMuon_eta1          [MAX_XB];
+double  StandAloneMuon_phi1          [MAX_XB];
+double  StandAloneMuon_dzPV1         [MAX_XB];
+double  StandAloneMuon_dxyPV1        [MAX_XB];
+int     StandAloneMuon_id1           [MAX_XB];
+bool    isStandAloneMuon2            [MAX_XB];
+int     StandAloneMuon_charge2       [MAX_XB];
+double  StandAloneMuon_pt2           [MAX_XB];
+double  StandAloneMuon_p2            [MAX_XB];
+double  StandAloneMuon_eta2          [MAX_XB];
+double  StandAloneMuon_phi2          [MAX_XB];
+double  StandAloneMuon_dzPV2         [MAX_XB];
+double  StandAloneMuon_dxyPV2        [MAX_XB];
+int     StandAloneMuon_id2           [MAX_XB];
+
+Int_t HLT_PAL1DoubleMu0_v1;
+Int_t HLT_PAL1DoubleMu0_v1_Prescl;
+Int_t HLT_PADimuon0_NoVertexing_v1;
+Int_t HLT_PADimuon0_NoVertexing_v1_Prescl;
+Int_t HLT_PAL1DoubleMu0_HighQ_v1;
+Int_t HLT_PAL1DoubleMu0_HighQ_v1_Prescl;
+Int_t HLT_PAL1DoubleMuOpen_v1;
+Int_t HLT_PAL1DoubleMuOpen_v1_Prescl;
+Int_t HLT_PAL2DoubleMu3_v1;
+Int_t HLT_PAL2DoubleMu3_v1_Prescl;
+Int_t HLT_PAMu3_v1;
+Int_t HLT_PAMu3_v1_Prescl;
+Int_t HLT_PAMu7_v1;
+Int_t HLT_PAMu7_v1_Prescl;
+Int_t HLT_PAMu12_v1;
+Int_t HLT_PAMu12_v1_Prescl;
+
+void buildBranch(TTree* nt){
+		nt->Branch("Run",  &Run);
+		nt->Branch("Event",&Event);
+		nt->Branch("size", &size);
+		nt->Branch("mass",  mass , "mass[size]/D");
+		nt->Branch("pt",    pt   , "pt[size][3]/D");
+		nt->Branch("genpt", genpt, "genpt[size][3]/D");
+		nt->Branch("eta",   eta  , "eta[size][3]/D");
+		nt->Branch("y",     y    , "y[size][3]/D");
+		nt->Branch("phi",   phi  , "phi[size][3]/D");
+		nt->Branch("isTracker1",isTracker1, "isTracker1[size]/O");
+		nt->Branch("isTracker2",isTracker2, "isTracker2[size]/O");
+		nt->Branch("isTriggered1",isTriggered1, "isTriggered1[size]/O");
+		nt->Branch("isTriggered2",isTriggered2, "isTriggered2[size]/O");
+		nt->Branch("charge1",charge1, "charge1[size]/I");
+		nt->Branch("charge2",charge2, "charge2[size]/I");
+		nt->Branch("pt1",pt1, "pt1[size]/D");
+		nt->Branch("pt2",pt2, "pt2[size]/D");
+		nt->Branch("p1",p1, "p1[size]/D");
+		nt->Branch("p2",p2, "p2[size]/D");
+		nt->Branch("eta1",eta1, "eta1[size]/D");
+		nt->Branch("eta2",eta2, "eta2[size]/D");
+		nt->Branch("phi1",phi1, "phi1[size]/D");
+		nt->Branch("phi2",phi2, "phi2[size]/D");
+		nt->Branch("id1",id1, "id1[size]/I");
+		nt->Branch("id2",id2, "id2[size]/I");
+		nt->Branch("outerTrackisNonnull1",outerTrackisNonnull1, "outerTrackisNonnull1[size]/O");
+		nt->Branch("outerTrackisNonnull2",outerTrackisNonnull2, "outerTrackisNonnull2[size]/O");
+		nt->Branch("gen",gen, "gen[size]/I");
+		nt->Branch("outerTrackisNonnull1",outerTrackisNonnull1, "outerTrackisNonnull1[size]/O");
+		nt->Branch("outerTrackisNonnull2",outerTrackisNonnull2, "outerTrackisNonnull2[size]/O");
+		nt->Branch("isTrackerMuArbitrated1",isTrackerMuArbitrated1, "isTrackerMuArbitrated1[size]/O");
+		nt->Branch("isTrackerMuArbitrated2",isTrackerMuArbitrated2, "isTrackerMuArbitrated2[size]/O");
+		nt->Branch("isTMOneStationTight1",isTMOneStationTight1, "isTMOneStationTight1[size]/O");
+		nt->Branch("isTMOneStationTight2",isTMOneStationTight2, "isTMOneStationTight2[size]/O");  
+		nt->Branch("isCalo1",isCalo1, "isCalo1[size]/O");  
+		nt->Branch("isCalo2",isCalo2, "isCalo2[size]/O");  
+		nt->Branch("nPixel1", nPixel1, "nPixel1[size]/I");  
+		nt->Branch("nPixel2", nPixel2, "nPixel2[size]/I");  
+		nt->Branch("nTracker1", nTracker1, "nTracker1[size]/I");  
+		nt->Branch("nTracker2", nTracker2, "nTracker2[size]/I");  
+		nt->Branch("dxy1", dxy1, "dxy1[size]/D");  
+		nt->Branch("dxy2", dxy2, "dxy2[size]/D");  
+		nt->Branch("dz1", dz1, "dz1[size]/D");  
+		nt->Branch("dz2", dz2, "dz2[size]/D");  
+		nt->Branch("chisq1", chisq1, "chisq1[size]/D");  
+		nt->Branch("chisq2", chisq2, "chisq2[size]/D");  
+		nt->Branch("innerTrackQuality1", innerTrackQuality1, "innerTrackQuality1[size]/I");  
+		nt->Branch("innerTrackQuality2", innerTrackQuality2, "innerTrackQuality2[size]/I");  
+
+		nt->Branch("isStandAloneMuon1", isStandAloneMuon1, "isStandAloneMuon1[size]/O");  
+		nt->Branch("StandAloneMuon_charge1", StandAloneMuon_charge1, "StandAloneMuon_charge1[size]/I");  
+		nt->Branch("StandAloneMuon_pt1", StandAloneMuon_pt1, "StandAloneMuon_pt1[size]/D");  
+		nt->Branch("StandAloneMuon_p1", StandAloneMuon_p1, "StandAloneMuon_p1[size]/D");  
+		nt->Branch("StandAloneMuon_eta1", StandAloneMuon_eta1, "StandAloneMuon_eta1[size]/D");  
+		nt->Branch("StandAloneMuon_phi1", StandAloneMuon_phi1, "StandAloneMuon_phi1[size]/D");  
+		nt->Branch("StandAloneMuon_dzPV1", StandAloneMuon_dzPV1, "StandAloneMuon_dzPV1[size]/D");  
+		nt->Branch("StandAloneMuon_dxyPV1", StandAloneMuon_dxyPV1, "StandAloneMuon_dxyPV1[size]/D");  
+		nt->Branch("StandAloneMuon_id1",StandAloneMuon_id1, "StandAloneMuon_id1[size]/I");
+		nt->Branch("isStandAloneMuon2", isStandAloneMuon2, "isStandAloneMuon2[size]/O");  
+		nt->Branch("StandAloneMuon_charge2", StandAloneMuon_charge2, "StandAloneMuon_charge2[size]/I");  
+		nt->Branch("StandAloneMuon_pt2", StandAloneMuon_pt2, "StandAloneMuon_pt2[size]/D");  
+		nt->Branch("StandAloneMuon_p2", StandAloneMuon_p2, "StandAloneMuon_p2[size]/D");  
+		nt->Branch("StandAloneMuon_eta2", StandAloneMuon_eta2, "StandAloneMuon_eta2[size]/D");  
+		nt->Branch("StandAloneMuon_phi2", StandAloneMuon_phi2, "StandAloneMuon_phi2[size]/D");  
+		nt->Branch("StandAloneMuon_dzPV2", StandAloneMuon_dzPV2, "StandAloneMuon_dzPV2[size]/D");  
+		nt->Branch("StandAloneMuon_dxyPV2", StandAloneMuon_dxyPV2, "StandAloneMuon_dxyPV2[size]/D");  
+		nt->Branch("StandAloneMuon_id2",StandAloneMuon_id2, "StandAloneMuon_id2[size]/I");
+
+		//nt->Branch("HLT_PAL1DoubleMu0_v1",&HLT_PAL1DoubleMu0_v1);
+		//nt->Branch("HLT_PAL1DoubleMu0_v1_Prescl",&HLT_PAL1DoubleMu0_v1_Prescl);
+		//nt->Branch("HLT_PADimuon0_NoVertexing_v1",&HLT_PADimuon0_NoVertexing_v1);
+		//nt->Branch("HLT_PADimuon0_NoVertexing_v1_Prescl",&HLT_PADimuon0_NoVertexing_v1_Prescl);
+		//nt->Branch("HLT_PAL1DoubleMu0_HighQ_v1",&HLT_PAL1DoubleMu0_HighQ_v1);
+		//nt->Branch("HLT_PAL1DoubleMu0_HighQ_v1_Prescl",&HLT_PAL1DoubleMu0_HighQ_v1_Prescl);
+		//nt->Branch("HLT_PAL1DoubleMuOpen_v1",&HLT_PAL1DoubleMuOpen_v1);
+		//nt->Branch("HLT_PAL1DoubleMuOpen_v1_Prescl",&HLT_PAL1DoubleMuOpen_v1_Prescl);
+		//nt->Branch("HLT_PAL2DoubleMu3_v1",&HLT_PAL2DoubleMu3_v1);
+		//nt->Branch("HLT_PAL2DoubleMu3_v1_Prescl",&HLT_PAL2DoubleMu3_v1_Prescl);
+		//nt->Branch("HLT_PAMu3_v1",&HLT_PAMu3_v1);
+		//nt->Branch("HLT_PAMu3_v1_Prescl",&HLT_PAMu3_v1_Prescl);
+		//nt->Branch("HLT_PAMu7_v1",&HLT_PAMu7_v1);
+		//nt->Branch("HLT_PAMu7_v1_Prescl",&HLT_PAMu7_v1_Prescl);
+		//nt->Branch("HLT_PAMu12_v1",&HLT_PAMu12_v1);
+		//nt->Branch("HLT_PAMu12_v1_Prescl",&HLT_PAMu12_v1_Prescl);
+}
+
+Int_t Gensize;
+Float_t Geny[MAX_GEN];
+Float_t Geneta[MAX_GEN];
+Float_t Genphi[MAX_GEN];
+Float_t Genpt[MAX_GEN];
+Float_t GenpdgId[MAX_GEN];
+
+void buildGenBranch(TTree* nt)
+{
+		nt->Branch("size",&Gensize);
+		nt->Branch("y",Geny, "y[size]/F");
+		nt->Branch("eta",Geneta, "eta[size]/F");
+		nt->Branch("phi",Genphi, "phi[size]/F");
+		nt->Branch("pt",Genpt, "pt[size]/F");
+		nt->Branch("pdgId",GenpdgId, "pdgId[size]/F");
+}
+
+//#########################################################################################
+
+//Declaration of leaves types
+Int_t           EvtInfo_RunNo;
+Int_t           EvtInfo_EvtNo;
+Int_t           EvtInfo_BxNo;
+Int_t           EvtInfo_LumiNo;
+Int_t           EvtInfo_Orbit;
+Bool_t          EvtInfo_McFlag;
+Int_t           EvtInfo_trgCount;
+Int_t           EvtInfo_nHLT;
+Bool_t          EvtInfo_hltBits[164];
+Int_t           EvtInfo_nBX;
+Int_t           EvtInfo_BXPU[0];
+Int_t           EvtInfo_nPU[0];
+Float_t         EvtInfo_trueIT[0];
+Double_t        EvtInfo_PVx;
+Double_t        EvtInfo_PVy;
+Double_t        EvtInfo_PVz;
+Double_t        EvtInfo_PVxE;
+Double_t        EvtInfo_PVyE;
+Double_t        EvtInfo_PVzE;
+Double_t        EvtInfo_PVnchi2;
+Double_t        EvtInfo_PVchi2;
+
+Int_t           MuonInfo_size;
+Int_t           MuonInfo_index[MAX_MUON];
+Int_t           MuonInfo_handle_index[MAX_MUON];
+Int_t           MuonInfo_charge[MAX_MUON];
+Double_t        MuonInfo_pt[MAX_MUON];
+Double_t        MuonInfo_eta[MAX_MUON];
+Double_t        MuonInfo_phi[MAX_MUON];
+Int_t           MuonInfo_i_striphit[MAX_MUON];
+Int_t           MuonInfo_i_pixelhit[MAX_MUON];
+Int_t           MuonInfo_i_nStripLayer[MAX_MUON];
+Int_t           MuonInfo_i_nPixelLayer[MAX_MUON];
+Int_t           MuonInfo_g_striphit[MAX_MUON];
+Int_t           MuonInfo_g_pixelhit[MAX_MUON];
+Bool_t          MuonInfo_isTrackerMuon[MAX_MUON];
+Bool_t          MuonInfo_isTriggered[MAX_MUON];
+Bool_t          MuonInfo_isGlobalMuon[MAX_MUON];
+Int_t           MuonInfo_type[MAX_MUON];
+Bool_t          MuonInfo_TMOneStationTight[MAX_MUON];
+Double_t        MuonInfo_normchi2[MAX_MUON];
+Double_t        MuonInfo_i_chi2[MAX_MUON];
+Double_t        MuonInfo_i_ndf[MAX_MUON];
+Double_t        MuonInfo_g_chi2[MAX_MUON];
+Double_t        MuonInfo_g_ndf[MAX_MUON];
+Int_t           MuonInfo_nmuhit[MAX_MUON];
+Double_t        MuonInfo_d0[MAX_MUON];
+Double_t        MuonInfo_dz[MAX_MUON];
+Double_t        MuonInfo_dzPV[MAX_MUON];
+Double_t        MuonInfo_dxyPV[MAX_MUON];
+Int_t           MuonInfo_fpbarrelhit[MAX_MUON];
+Int_t           MuonInfo_fpendcaphit[MAX_MUON];
+Int_t           MuonInfo_muqual[MAX_MUON];
+Double_t        MuonInfo_iso_trk[MAX_MUON];
+Double_t        MuonInfo_iso_ecal[MAX_MUON];
+Double_t        MuonInfo_iso_hcal[MAX_MUON];
+Double_t        MuonInfo_n_matches[MAX_MUON];
+Int_t           MuonInfo_isGoodCand[MAX_MUON];
+Int_t           MuonInfo_geninfo_index[MAX_MUON];
+Bool_t          MuonInfo_outerTrackisNonnull[MAX_MUON];
+Int_t           MuonInfo_innerTrackQuality[MAX_MUON];
+
+Bool_t          MuonInfo_isStandAloneMuon[MAX_MUON];
+Int_t           MuonInfo_StandAloneMuon_charge       [ MAX_MUON];
+Double_t        MuonInfo_StandAloneMuon_pt           [ MAX_MUON];
+Double_t        MuonInfo_StandAloneMuon_eta          [ MAX_MUON];
+Double_t        MuonInfo_StandAloneMuon_phi          [ MAX_MUON];
+Double_t        MuonInfo_StandAloneMuon_d0           [ MAX_MUON];
+Double_t        MuonInfo_StandAloneMuon_dz           [ MAX_MUON];
+Double_t        MuonInfo_StandAloneMuon_dzPV         [ MAX_MUON];
+Double_t        MuonInfo_StandAloneMuon_dxyPV        [ MAX_MUON];
+
+Int_t           TrackInfo_size;
+Int_t           TrackInfo_index[MAX_TRACK];
+Int_t           TrackInfo_handle_index[MAX_TRACK];
+Int_t           TrackInfo_charge[MAX_TRACK];
+Double_t        TrackInfo_pt[MAX_TRACK];
+Double_t        TrackInfo_eta[MAX_TRACK];
+Double_t        TrackInfo_phi[MAX_TRACK];
+Int_t           TrackInfo_striphit[MAX_TRACK];
+Int_t           TrackInfo_pixelhit[MAX_TRACK];
+Int_t           TrackInfo_fpbarrelhit[MAX_TRACK];
+Int_t           TrackInfo_fpendcaphit[MAX_TRACK];
+Double_t        TrackInfo_chi2[MAX_TRACK];
+Double_t        TrackInfo_ndf[MAX_TRACK];
+Double_t        TrackInfo_d0[MAX_TRACK];
+Double_t        TrackInfo_d0error[MAX_TRACK];
+Double_t        TrackInfo_dzPV[MAX_TRACK];
+Double_t        TrackInfo_dxyPV[MAX_TRACK];
+Int_t           TrackInfo_isGoodCand[MAX_TRACK];
+Int_t           TrackInfo_geninfo_index[MAX_TRACK];
+Int_t           BInfo_uj_size;
+Int_t           BInfo_uj_index[MAX_XB];
+Double_t        BInfo_uj_mass[MAX_XB];
+Double_t        BInfo_uj_px[MAX_XB];
+Double_t        BInfo_uj_py[MAX_XB];
+Double_t        BInfo_uj_pz[MAX_XB];
+Double_t        BInfo_uj_vtxX[MAX_XB];
+Double_t        BInfo_uj_vtxY[MAX_XB];
+Double_t        BInfo_uj_vtxZ[MAX_XB];
+Double_t        BInfo_uj_vtxXE[MAX_XB];
+Double_t        BInfo_uj_vtxYE[MAX_XB];
+Double_t        BInfo_uj_vtxZE[MAX_XB];
+Double_t        BInfo_uj_vtxdof[MAX_XB];
+Double_t        BInfo_uj_vtxchi2[MAX_XB];
+Int_t           BInfo_uj_rfmu1_index[MAX_XB];
+Int_t           BInfo_uj_rfmu2_index[MAX_XB];
+Int_t           BInfo_uj_isGoodCand[MAX_XB];
+Double_t        BInfo_uj_rfmu1_px[MAX_XB];
+Double_t        BInfo_uj_rfmu1_py[MAX_XB];
+Double_t        BInfo_uj_rfmu1_pz[MAX_XB];
+Double_t        BInfo_uj_rfmu2_px[MAX_XB];
+Double_t        BInfo_uj_rfmu2_py[MAX_XB];
+Double_t        BInfo_uj_rfmu2_pz[MAX_XB];
+Int_t           BInfo_size;
+Int_t           BInfo_index[MAX_XB];
+Double_t        BInfo_mass[MAX_XB];
+Double_t        BInfo_eta[MAX_XB];
+Double_t        BInfo_phi[MAX_XB];
+Double_t        BInfo_px[MAX_XB];
+Double_t        BInfo_py[MAX_XB];
+Double_t        BInfo_pz[MAX_XB];
+Double_t        BInfo_pt[MAX_XB];
+Double_t        BInfo_pxE[MAX_XB];
+Double_t        BInfo_pyE[MAX_XB];
+Double_t        BInfo_pzE[MAX_XB];
+Double_t        BInfo_vtxX[MAX_XB];
+Double_t        BInfo_vtxY[MAX_XB];
+Double_t        BInfo_vtxZ[MAX_XB];
+Double_t        BInfo_vtxXE[MAX_XB];
+Double_t        BInfo_vtxYE[MAX_XB];
+Double_t        BInfo_vtxZE[MAX_XB];
+Double_t        BInfo_vtxdof[MAX_XB];
+Double_t        BInfo_vtxchi2[MAX_XB];
+Int_t           BInfo_rfuj_index[MAX_XB];
+Int_t           BInfo_rftk1_index[MAX_XB];
+Int_t           BInfo_rftk2_index[MAX_XB];
+Int_t           BInfo_isGoodCand[MAX_XB];
+Int_t           BInfo_type[MAX_XB];
+Double_t        BInfo_rfmu1_px[MAX_XB];
+Double_t        BInfo_rfmu1_py[MAX_XB];
+Double_t        BInfo_rfmu1_pz[MAX_XB];
+Double_t        BInfo_rfmu2_px[MAX_XB];
+Double_t        BInfo_rfmu2_py[MAX_XB];
+Double_t        BInfo_rfmu2_pz[MAX_XB];
+Double_t        BInfo_rftk1_px[MAX_XB];
+Double_t        BInfo_rftk1_py[MAX_XB];
+Double_t        BInfo_rftk1_pz[MAX_XB];
+Double_t        BInfo_rftk2_px[MAX_XB];
+Double_t        BInfo_rftk2_py[MAX_XB];
+Double_t        BInfo_rftk2_pz[MAX_XB];
+Double_t        BInfo_tktk_mass[MAX_XB];
+Double_t        BInfo_tktk_px[MAX_XB];
+Double_t        BInfo_tktk_py[MAX_XB];
+Double_t        BInfo_tktk_pz[MAX_XB];
+Double_t        BInfo_tktk_vtxX[MAX_XB];
+Double_t        BInfo_tktk_vtxY[MAX_XB];
+Double_t        BInfo_tktk_vtxZ[MAX_XB];
+Double_t        BInfo_tktk_vtxXE[MAX_XB];
+Double_t        BInfo_tktk_vtxYE[MAX_XB];
+Double_t        BInfo_tktk_vtxZE[MAX_XB];
+Double_t        BInfo_tktk_vtxdof[MAX_XB];
+Double_t        BInfo_tktk_vtxchi2[MAX_XB];
+Int_t           GenInfo_size;
+Int_t           GenInfo_index[MAX_GEN];
+Int_t           GenInfo_handle_index[MAX_GEN];
+Double_t        GenInfo_pt[MAX_GEN];
+Double_t        GenInfo_eta[MAX_GEN];
+Double_t        GenInfo_phi[MAX_GEN];
+Double_t        GenInfo_mass[MAX_GEN];
+Int_t           GenInfo_pdgId[MAX_GEN];
+Int_t           GenInfo_status[MAX_GEN];
+Int_t           GenInfo_nMo[MAX_GEN];
+Int_t           GenInfo_nDa[MAX_GEN];
+Int_t           GenInfo_mo1[MAX_GEN];
+Int_t           GenInfo_mo2[MAX_GEN];
+Int_t           GenInfo_da1[MAX_GEN];
+Int_t           GenInfo_da2[MAX_GEN];
+//Int_t           GenInfo_mhmu1_index;
+//Int_t           GenInfo_mhmu2_index;
+//Int_t           GenInfo_mhtk1_index;
+//Int_t           GenInfo_mhtk2_index;
+//Double_t        GenInfo_mhujMass;
+//Double_t        GenInfo_mhxbMass;
+
+Int_t           Bfr_HLT_Event;
+Int_t           Bfr_HLT_Run;
+Int_t           Bfr_HLT_PAL1DoubleMu0_v1;
+Int_t           Bfr_HLT_PAL1DoubleMu0_v1_Prescl;
+Int_t           Bfr_HLT_PADimuon0_NoVertexing_v1;
+Int_t           Bfr_HLT_PADimuon0_NoVertexing_v1_Prescl;
+Int_t           Bfr_HLT_PAL1DoubleMu0_HighQ_v1;
+Int_t           Bfr_HLT_PAL1DoubleMu0_HighQ_v1_Prescl;
+Int_t           Bfr_HLT_PAL1DoubleMuOpen_v1;
+Int_t           Bfr_HLT_PAL1DoubleMuOpen_v1_Prescl;
+Int_t           Bfr_HLT_PAL2DoubleMu3_v1;
+Int_t           Bfr_HLT_PAL2DoubleMu3_v1_Prescl;
+Int_t           Bfr_HLT_PAMu3_v1;
+Int_t           Bfr_HLT_PAMu3_v1_Prescl;
+Int_t           Bfr_HLT_PAMu7_v1;
+Int_t           Bfr_HLT_PAMu7_v1_Prescl;
+Int_t           Bfr_HLT_PAMu12_v1;
+Int_t           Bfr_HLT_PAMu12_v1_Prescl;
+
+void setBranch(TTree *root) {
+		// Set branch addresses.
+		root->SetBranchAddress("EvtInfo.RunNo",&EvtInfo_RunNo);
+		root->SetBranchAddress("EvtInfo.EvtNo",&EvtInfo_EvtNo);
+		//root->SetBranchAddress("EvtInfo.BxNo",&EvtInfo_BxNo);
+		//root->SetBranchAddress("EvtInfo.LumiNo",&EvtInfo_LumiNo);
+		//root->SetBranchAddress("EvtInfo.Orbit",&EvtInfo_Orbit);
+		//root->SetBranchAddress("EvtInfo.McFlag",&EvtInfo_McFlag);
+		//root->SetBranchAddress("EvtInfo.trgCount",&EvtInfo_trgCount);
+		//root->SetBranchAddress("EvtInfo.nHLT",&EvtInfo_nHLT);
+		//root->SetBranchAddress("EvtInfo.hltBits",EvtInfo_hltBits);
+		//root->SetBranchAddress("EvtInfo.nBX",&EvtInfo_nBX);
+		//root->SetBranchAddress("EvtInfo.BXPU",&EvtInfo_BXPU);
+		//root->SetBranchAddress("EvtInfo.nPU",&EvtInfo_nPU);
+		//root->SetBranchAddress("EvtInfo.trueIT",&EvtInfo_trueIT);
+		root->SetBranchAddress("EvtInfo.PVx",&EvtInfo_PVx);
+		root->SetBranchAddress("EvtInfo.PVy",&EvtInfo_PVy);
+		root->SetBranchAddress("EvtInfo.PVz",&EvtInfo_PVz);
+		//root->SetBranchAddress("EvtInfo.PVxE",&EvtInfo_PVxE);
+		//root->SetBranchAddress("EvtInfo.PVyE",&EvtInfo_PVyE);
+		//root->SetBranchAddress("EvtInfo.PVzE",&EvtInfo_PVzE);
+		//root->SetBranchAddress("EvtInfo.PVnchi2",&EvtInfo_PVnchi2);
+		//root->SetBranchAddress("EvtInfo.PVchi2",&EvtInfo_PVchi2);
+
+		root->SetBranchAddress("MuonInfo.size",&MuonInfo_size);
+		root->SetBranchAddress("MuonInfo.index",MuonInfo_index);
+		root->SetBranchAddress("MuonInfo.handle_index",MuonInfo_handle_index);
+		root->SetBranchAddress("MuonInfo.charge",MuonInfo_charge);
+		root->SetBranchAddress("MuonInfo.pt",MuonInfo_pt);
+		root->SetBranchAddress("MuonInfo.eta",MuonInfo_eta);
+		root->SetBranchAddress("MuonInfo.phi",MuonInfo_phi);
+		root->SetBranchAddress("MuonInfo.i_striphit",MuonInfo_i_striphit);
+		root->SetBranchAddress("MuonInfo.i_pixelhit",MuonInfo_i_pixelhit);
+		root->SetBranchAddress("MuonInfo.i_nStripLayer",MuonInfo_i_nStripLayer);
+		root->SetBranchAddress("MuonInfo.i_nPixelLayer",MuonInfo_i_nPixelLayer);
+		root->SetBranchAddress("MuonInfo.g_striphit",MuonInfo_g_striphit);
+		root->SetBranchAddress("MuonInfo.g_pixelhit",MuonInfo_g_pixelhit);
+		root->SetBranchAddress("MuonInfo.isTriggered",MuonInfo_isTriggered);
+		root->SetBranchAddress("MuonInfo.isTrackerMuon",MuonInfo_isTrackerMuon);
+		root->SetBranchAddress("MuonInfo.isGlobalMuon",MuonInfo_isGlobalMuon);
+		root->SetBranchAddress("MuonInfo.type",MuonInfo_type);
+		//root->SetBranchAddress("MuonInfo.TMOneStationTight",MuonInfo_TMOneStationTight);
+		root->SetBranchAddress("MuonInfo.normchi2",MuonInfo_normchi2);
+		root->SetBranchAddress("MuonInfo.i_chi2",MuonInfo_i_chi2);
+		root->SetBranchAddress("MuonInfo.i_ndf",MuonInfo_i_ndf);
+		//root->SetBranchAddress("MuonInfo.g_chi2",MuonInfo_g_chi2);
+		//root->SetBranchAddress("MuonInfo.g_ndf",MuonInfo_g_ndf);
+		//root->SetBranchAddress("MuonInfo.nmuhit",MuonInfo_nmuhit);
+		//root->SetBranchAddress("MuonInfo.d0",MuonInfo_d0);
+		//root->SetBranchAddress("MuonInfo.dz",MuonInfo_dz);
+		root->SetBranchAddress("MuonInfo.dzPV",MuonInfo_dzPV);
+		root->SetBranchAddress("MuonInfo.dxyPV",MuonInfo_dxyPV);
+		//root->SetBranchAddress("MuonInfo.fpbarrelhit",MuonInfo_fpbarrelhit);
+		//root->SetBranchAddress("MuonInfo.fpendcaphit",MuonInfo_fpendcaphit);
+		root->SetBranchAddress("MuonInfo.muqual",MuonInfo_muqual);
+		//root->SetBranchAddress("MuonInfo.iso_trk",MuonInfo_iso_trk);
+		//root->SetBranchAddress("MuonInfo.iso_ecal",MuonInfo_iso_ecal);
+		//root->SetBranchAddress("MuonInfo.iso_hcal",MuonInfo_iso_hcal);
+		//root->SetBranchAddress("MuonInfo.n_matches",MuonInfo_n_matches);
+		//root->SetBranchAddress("MuonInfo.isGoodCand",MuonInfo_isGoodCand);
+		root->SetBranchAddress("MuonInfo.geninfo_index",MuonInfo_geninfo_index);
+		root->SetBranchAddress("MuonInfo.outerTrackisNonnull",MuonInfo_outerTrackisNonnull);
+		root->SetBranchAddress("MuonInfo.innerTrackQuality",MuonInfo_innerTrackQuality);
+
+		root->SetBranchAddress("MuonInfo.isStandAloneMuon"             , MuonInfo_isStandAloneMuon              );
+		root->SetBranchAddress("MuonInfo.StandAloneMuon_charge"        , MuonInfo_StandAloneMuon_charge         );
+		root->SetBranchAddress("MuonInfo.StandAloneMuon_pt"            , MuonInfo_StandAloneMuon_pt             );
+		root->SetBranchAddress("MuonInfo.StandAloneMuon_eta"           , MuonInfo_StandAloneMuon_eta            );
+		root->SetBranchAddress("MuonInfo.StandAloneMuon_phi"           , MuonInfo_StandAloneMuon_phi            );
+		root->SetBranchAddress("MuonInfo.StandAloneMuon_d0"            , MuonInfo_StandAloneMuon_d0             );
+		root->SetBranchAddress("MuonInfo.StandAloneMuon_dz"            , MuonInfo_StandAloneMuon_dz             );
+		root->SetBranchAddress("MuonInfo.StandAloneMuon_dzPV"          , MuonInfo_StandAloneMuon_dzPV           );
+		root->SetBranchAddress("MuonInfo.StandAloneMuon_dxyPV"         , MuonInfo_StandAloneMuon_dxyPV          );
+
+		//root->SetBranchAddress("TrackInfo.size",&TrackInfo_size);
+		//root->SetBranchAddress("TrackInfo.index",TrackInfo_index);
+		//root->SetBranchAddress("TrackInfo.handle_index",TrackInfo_handle_index);
+		//root->SetBranchAddress("TrackInfo.charge",TrackInfo_charge);
+		//root->SetBranchAddress("TrackInfo.pt",TrackInfo_pt);
+		//root->SetBranchAddress("TrackInfo.eta",TrackInfo_eta);
+		//root->SetBranchAddress("TrackInfo.phi",TrackInfo_phi);
+		//root->SetBranchAddress("TrackInfo.striphit",TrackInfo_striphit);
+		//root->SetBranchAddress("TrackInfo.pixelhit",TrackInfo_pixelhit);
+		//root->SetBranchAddress("TrackInfo.fpbarrelhit",TrackInfo_fpbarrelhit);
+		//root->SetBranchAddress("TrackInfo.fpendcaphit",TrackInfo_fpendcaphit);
+
+		//root->SetBranchAddress("TrackInfo.chi2",TrackInfo_chi2);
+		//root->SetBranchAddress("TrackInfo.ndf",TrackInfo_ndf);
+		//root->SetBranchAddress("TrackInfo.d0",TrackInfo_d0);
+		//root->SetBranchAddress("TrackInfo.d0error",TrackInfo_d0error);
+		//root->SetBranchAddress("TrackInfo.dzPV",TrackInfo_dzPV);
+		//root->SetBranchAddress("TrackInfo.dxyPV",TrackInfo_dxyPV);
+		//root->SetBranchAddress("TrackInfo.isGoodCand",TrackInfo_isGoodCand);
+		//root->SetBranchAddress("TrackInfo.geninfo_index",TrackInfo_geninfo_index);
+
+		//root->SetBranchAddress("BInfo.uj_size",&BInfo_uj_size);
+		//root->SetBranchAddress("BInfo.uj_index",BInfo_uj_index);
+		//root->SetBranchAddress("BInfo.uj_mass",BInfo_uj_mass);
+		//root->SetBranchAddress("BInfo.uj_px",BInfo_uj_px);
+		//root->SetBranchAddress("BInfo.uj_py",BInfo_uj_py);
+		//root->SetBranchAddress("BInfo.uj_pz",BInfo_uj_pz);
+		//root->SetBranchAddress("BInfo.uj_vtxX",BInfo_uj_vtxX);
+		//root->SetBranchAddress("BInfo.uj_vtxY",BInfo_uj_vtxY);
+		//root->SetBranchAddress("BInfo.uj_vtxZ",BInfo_uj_vtxZ);
+		//root->SetBranchAddress("BInfo.uj_vtxXE",BInfo_uj_vtxXE);
+		//root->SetBranchAddress("BInfo.uj_vtxYE",BInfo_uj_vtxYE);
+		//root->SetBranchAddress("BInfo.uj_vtxZE",BInfo_uj_vtxZE);
+
+		//root->SetBranchAddress("BInfo.uj_vtxdof",BInfo_uj_vtxdof);
+		//root->SetBranchAddress("BInfo.uj_vtxchi2",BInfo_uj_vtxchi2);
+		//root->SetBranchAddress("BInfo.uj_rfmu1_index",BInfo_uj_rfmu1_index);
+		//root->SetBranchAddress("BInfo.uj_rfmu2_index",BInfo_uj_rfmu2_index);
+		//root->SetBranchAddress("BInfo.uj_isGoodCand",BInfo_uj_isGoodCand);
+		//root->SetBranchAddress("BInfo.uj_rfmu1_px",BInfo_uj_rfmu1_px);
+		//root->SetBranchAddress("BInfo.uj_rfmu1_py",BInfo_uj_rfmu1_py);
+		//root->SetBranchAddress("BInfo.uj_rfmu1_pz",BInfo_uj_rfmu1_pz);
+		//root->SetBranchAddress("BInfo.uj_rfmu2_px",BInfo_uj_rfmu2_px);
+		//root->SetBranchAddress("BInfo.uj_rfmu2_py",BInfo_uj_rfmu2_py);
+		//root->SetBranchAddress("BInfo.uj_rfmu2_pz",BInfo_uj_rfmu2_pz);
+
+		//root->SetBranchAddress("BInfo.size",&BInfo_size);
+		//root->SetBranchAddress("BInfo.index",BInfo_index);
+		//root->SetBranchAddress("BInfo.mass",BInfo_mass);
+		//root->SetBranchAddress("BInfo.eta",BInfo_eta);
+		//root->SetBranchAddress("BInfo.phi",BInfo_phi);
+
+		//root->SetBranchAddress("BInfo.px",BInfo_px);
+		//root->SetBranchAddress("BInfo.py",BInfo_py);
+		//root->SetBranchAddress("BInfo.pt",BInfo_pt);
+		//root->SetBranchAddress("BInfo.pz",BInfo_pz);
+		//root->SetBranchAddress("BInfo.pxE",BInfo_pxE);
+		//root->SetBranchAddress("BInfo.pyE",BInfo_pyE);
+		//root->SetBranchAddress("BInfo.pzE",BInfo_pzE);
+		//root->SetBranchAddress("BInfo.vtxX",BInfo_vtxX);
+		//root->SetBranchAddress("BInfo.vtxY",BInfo_vtxY);
+		//root->SetBranchAddress("BInfo.vtxZ",BInfo_vtxZ);
+		//root->SetBranchAddress("BInfo.vtxXE",BInfo_vtxXE);
+		//root->SetBranchAddress("BInfo.vtxYE",BInfo_vtxYE);
+		//root->SetBranchAddress("BInfo.vtxZE",BInfo_vtxZE);
+		//root->SetBranchAddress("BInfo.vtxdof",BInfo_vtxdof);
+		//root->SetBranchAddress("BInfo.vtxchi2",BInfo_vtxchi2);
+
+		//root->SetBranchAddress("BInfo.rfuj_index",BInfo_rfuj_index);
+		//root->SetBranchAddress("BInfo.rftk1_index",BInfo_rftk1_index);
+		//root->SetBranchAddress("BInfo.rftk2_index",BInfo_rftk2_index);
+		//root->SetBranchAddress("BInfo.isGoodCand",BInfo_isGoodCand);
+		//root->SetBranchAddress("BInfo.type",BInfo_type);
+
+		//root->SetBranchAddress("BInfo.rfmu1_px",BInfo_rfmu1_px);
+		//root->SetBranchAddress("BInfo.rfmu1_py",BInfo_rfmu1_py);
+		//root->SetBranchAddress("BInfo.rfmu1_pz",BInfo_rfmu1_pz);
+		//root->SetBranchAddress("BInfo.rfmu2_px",BInfo_rfmu2_px);
+		//root->SetBranchAddress("BInfo.rfmu2_py",BInfo_rfmu2_py);
+		//root->SetBranchAddress("BInfo.rfmu2_pz",BInfo_rfmu2_pz);
+
+		//root->SetBranchAddress("BInfo.rftk1_px",BInfo_rftk1_px);
+		//root->SetBranchAddress("BInfo.rftk1_py",BInfo_rftk1_py);
+		//root->SetBranchAddress("BInfo.rftk1_pz",BInfo_rftk1_pz);
+		//root->SetBranchAddress("BInfo.rftk2_px",BInfo_rftk2_px);
+		//root->SetBranchAddress("BInfo.rftk2_py",BInfo_rftk2_py);
+		//root->SetBranchAddress("BInfo.rftk2_pz",BInfo_rftk2_pz);
+
+		//root->SetBranchAddress("BInfo.tktk_mass",BInfo_tktk_mass);
+		//root->SetBranchAddress("BInfo.tktk_px",BInfo_tktk_px);
+		//root->SetBranchAddress("BInfo.tktk_py",BInfo_tktk_py);
+		//root->SetBranchAddress("BInfo.tktk_pz",BInfo_tktk_pz);
+		//root->SetBranchAddress("BInfo.tktk_vtxX",BInfo_tktk_vtxX);
+		//root->SetBranchAddress("BInfo.tktk_vtxY",BInfo_tktk_vtxY);
+		//root->SetBranchAddress("BInfo.tktk_vtxZ",BInfo_tktk_vtxZ);
+		//root->SetBranchAddress("BInfo.tktk_vtxXE",BInfo_tktk_vtxXE);
+		//root->SetBranchAddress("BInfo.tktk_vtxYE",BInfo_tktk_vtxYE);
+		//root->SetBranchAddress("BInfo.tktk_vtxZE",BInfo_tktk_vtxZE);
+		//root->SetBranchAddress("BInfo.tktk_vtxdof",BInfo_tktk_vtxdof);
+		//root->SetBranchAddress("BInfo.tktk_vtxchi2",BInfo_tktk_vtxchi2);
+		
+		root->SetBranchAddress("GenInfo.size",&GenInfo_size);
+		root->SetBranchAddress("GenInfo.index",&GenInfo_index);
+		root->SetBranchAddress("GenInfo.handle_index",&GenInfo_handle_index);
+		root->SetBranchAddress("GenInfo.pt",&GenInfo_pt);
+		root->SetBranchAddress("GenInfo.eta",&GenInfo_eta);
+		root->SetBranchAddress("GenInfo.phi",&GenInfo_phi);
+		root->SetBranchAddress("GenInfo.mass",&GenInfo_mass);
+		root->SetBranchAddress("GenInfo.pdgId",&GenInfo_pdgId);
+		root->SetBranchAddress("GenInfo.status",&GenInfo_status);
+		root->SetBranchAddress("GenInfo.nMo",&GenInfo_nMo);
+		root->SetBranchAddress("GenInfo.nDa",&GenInfo_nDa);
+		root->SetBranchAddress("GenInfo.mo1",&GenInfo_mo1);
+		root->SetBranchAddress("GenInfo.mo2",&GenInfo_mo2);
+		root->SetBranchAddress("GenInfo.da1",&GenInfo_da1);
+		root->SetBranchAddress("GenInfo.da2",&GenInfo_da2);
+
+		//root->SetBranchAddress("Geninfo.mhmu1_index",&GenInfo_mhmu1_index);
+		//root->SetBranchAddress("Geninfo.mhmu2_index",&GenInfo_mhmu2_index);
+		//root->SetBranchAddress("Geninfo.mhtk1_index",&GenInfo_mhtk1_index);
+		//root->SetBranchAddress("Geninfo.mhtk2_index",&GenInfo_mhtk2_index);
+		//root->SetBranchAddress("GenInfo.mhujMass",&GenInfo_mhujMass);
+		//root->SetBranchAddress("GenInfo.mhxbMass",&GenInfo_mhxbMass);
+
+		//     This is the loop skeleton
+		//       To read only selected branches, Insert statements like:
+		// root->SetBranchStatus("*",0);  // disable all branches
+		// TTreePlayer->SetBranchStatus("branchname",1);  // activate branchname
+
+
+}
+
+void setHltBranch(TTree* HltTree)
+{
+		HltTree->SetBranchAddress("Event",&Bfr_HLT_Event);
+		HltTree->SetBranchAddress("Run",&Bfr_HLT_Run);
+
+		HltTree->SetBranchAddress("HLT_PAL1DoubleMu0_v1",&Bfr_HLT_PAL1DoubleMu0_v1);
+		HltTree->SetBranchAddress("HLT_PAL1DoubleMu0_v1_Prescl",&Bfr_HLT_PAL1DoubleMu0_v1_Prescl);
+		HltTree->SetBranchAddress("HLT_PADimuon0_NoVertexing_v1",&Bfr_HLT_PADimuon0_NoVertexing_v1);
+		HltTree->SetBranchAddress("HLT_PADimuon0_NoVertexing_v1_Prescl",&Bfr_HLT_PADimuon0_NoVertexing_v1_Prescl);
+		HltTree->SetBranchAddress("HLT_PAL1DoubleMu0_HighQ_v1",&Bfr_HLT_PAL1DoubleMu0_HighQ_v1);
+		HltTree->SetBranchAddress("HLT_PAL1DoubleMu0_HighQ_v1_Prescl",&Bfr_HLT_PAL1DoubleMu0_HighQ_v1_Prescl);
+		HltTree->SetBranchAddress("HLT_PAL1DoubleMuOpen_v1",&Bfr_HLT_PAL1DoubleMuOpen_v1);
+		HltTree->SetBranchAddress("HLT_PAL1DoubleMuOpen_v1_Prescl",&Bfr_HLT_PAL1DoubleMuOpen_v1_Prescl);
+		HltTree->SetBranchAddress("HLT_PAL2DoubleMu3_v1",&Bfr_HLT_PAL2DoubleMu3_v1);
+		HltTree->SetBranchAddress("HLT_PAL2DoubleMu3_v1_Prescl",&Bfr_HLT_PAL2DoubleMu3_v1_Prescl);
+		HltTree->SetBranchAddress("HLT_PAMu3_v1",&Bfr_HLT_PAMu3_v1);
+		HltTree->SetBranchAddress("HLT_PAMu3_v1_Prescl",&Bfr_HLT_PAMu3_v1_Prescl);
+		HltTree->SetBranchAddress("HLT_PAMu7_v1",&Bfr_HLT_PAMu7_v1);
+		HltTree->SetBranchAddress("HLT_PAMu7_v1_Prescl",&Bfr_HLT_PAMu7_v1_Prescl);
+		HltTree->SetBranchAddress("HLT_PAMu12_v1",&Bfr_HLT_PAMu12_v1);
+		HltTree->SetBranchAddress("HLT_PAMu12_v1_Prescl",&Bfr_HLT_PAMu12_v1_Prescl);
+}
