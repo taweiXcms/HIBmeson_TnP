@@ -1,16 +1,17 @@
 #include "TFile.h"
 #include "TTree.h"
 #include "TString.h"
-#include "../Display/utilities.h"
+#include "utilities.h"
 #include "TH1D.h"
 //#define NUM_BX   9000
 #define NUM_BX 20000
 
-void fitJpsi(bool isDataInput=true){
-//void fitJpsi(bool isDataInput=false){
+void fitJpsi(TString infname="", TString outputfile="", bool isDataInput=false, bool SavePlots = false){
+//void fitJpsi(TString infname="", TString outputfile="", bool isDataInput=true, bool SavePlots = false){
 
   TString plotfolder = "PlotsData";
   if(!isDataInput) plotfolder = "PlotsMC";
+  double PtCut = 1.5;
 
   int nBin = 400;
   double mumulow=2.6;
@@ -19,33 +20,27 @@ void fitJpsi(bool isDataInput=true){
   double mumuTrkhigh=5.0;
 //  double mumuTrklow=2.6;
 //  double mumuTrkhigh=3.5;
-//
 
-  TString outputfile;
-//  if(isDataInput) outputfile="../../0930_DefaultMuId_TnPfiles/foutputData_20140930_PAMuon_HIRun2013_28Sep2013_v1.root";
-//  if(isDataInput) outputfile="../../0930_DefaultMuId_TnPfiles/foutputData_20140930_PAMuon_HIRun2013_PromptReco_v1_1.root";
-//  if(isDataInput) outputfile="../../0930_DefaultMuId_TnPfiles/foutputData_20140930_PAMuon_HIRun2013_PromptReco_v1_2.root";
-//  if(isDataInput) outputfile="../../0930_DefaultMuId_TnPfiles/foutputData_20140930_PAMuon_HIRun2013_PromptReco_v1_3.root";
-//  if(isDataInput) outputfile="../../0930_DefaultMuId_TnPfiles/foutputData_20140930_PAMuon_HIRun2013_PromptReco_v1_4.root";
-//  if(isDataInput) outputfile="../../0930_DefaultMuId_TnPfiles/foutputData_20140930_PAMuon_HIRun2013_PromptReco_v1_5.root";
-  if(isDataInput) outputfile="../../0930_DefaultMuId_TnPfiles/foutputData_20140930_PAMuon_HIRun2013_PromptReco_v1_6.root";
-  else outputfile="../../0930_DefaultMuId_TnPfiles/foutputMC.root";
+  //infname="/mnt/hadoop/cms/store/user/tawei/TnPBntuple/TnPnt_20140930_PAMuon_HIRun2013_28Sep2013_v1/TnPnt_20140930_PAMuon_HIRun2013_28Sep2013_v1_106.root";a
+  //infname="/net/hisrv0001/home/tawei/HeavyFlavor_20131030/TnP/HIBmeson_TnP/loopTP/test.root";
+  //infname="/mnt/hadoop/cms/store/user/tawei/TnPBntuple/TnPnt_BfinderBoostedMC_20141022_hckim-HIJINGemb_inclBtoPsiMuMu/*.root";
+  TChain *ntuple = new TChain("ntJpsi");
+  TChain *nt_mcgen = new TChain("ntGen");
+  ntuple->Add(infname.Data());
+  nt_mcgen->Add(infname.Data());
+  ntuple->AddFriend(nt_mcgen);
+  if(ntuple->GetEntries() == 0 || (!isDataInput && nt_mcgen->GetEntries() == 0)) {
+	cout<< "WARNING!! unable to read input file, exit immediately" <<endl; 
+    return;
+  }
+
+  //outputfile="../../0930_DefaultMuId_TnPfiles/foutputData_20140930_PAMuon_HIRun2013_28Sep2013_v1.root";
+  //outputfile="../../1022_DefaultMuId_TnPfiles/foutputMC.root";
+  //outputfile="test.root";
   TFile*foutput=new TFile(outputfile.Data(),"recreate");
-
   TTree* TnPtreeTrg = new TTree("TnPtreeTrg","");
   TTree* TnPtreeTrk = new TTree("TnPtreeTrk","");
   TTree* TnPtreeID = new TTree("TnPtreeID","");
-
-  TString infname;
-//  if(isDataInput) infname="/export/d00/scratch/jwang/tawei/TnPBntuple/TnPnt_20140930_PAMuon_HIRun2013_28Sep2013_v1.root";
-//  if(isDataInput) infname="/export/d00/scratch/jwang/tawei/TnPBntuple/TnPnt_20140930_PAMuon_HIRun2013_PromptReco_v1_1.root";
-//  if(isDataInput) infname="/export/d00/scratch/jwang/tawei/TnPBntuple/TnPnt_20140930_PAMuon_HIRun2013_PromptReco_v1_2.root";
-//  if(isDataInput) infname="/export/d00/scratch/jwang/tawei/TnPBntuple/TnPnt_20140930_PAMuon_HIRun2013_PromptReco_v1_3.root";
-//  if(isDataInput) infname="/export/d00/scratch/jwang/tawei/TnPBntuple/TnPnt_20140930_PAMuon_HIRun2013_PromptReco_v1_4.root";
-//  if(isDataInput) infname="/export/d00/scratch/jwang/tawei/TnPBntuple/TnPnt_20140930_PAMuon_HIRun2013_PromptReco_v1_5.root";
-  if(isDataInput) infname="/export/d00/scratch/jwang/tawei/TnPBntuple/TnPnt_20140930_PAMuon_HIRun2013_PromptReco_v1_6.root";
-  else infname="/export/d00/scratch/jwang/tawei/TnPBntuple/TnPnt_BoostedMC_20140930_Kp.root";
-  TFile *inf = new TFile(infname.Data());
 
   double massTrg, massTrk, massID;
   double passTrg, passTrk, passID;
@@ -84,9 +79,6 @@ void fitJpsi(bool isDataInput=true){
   Bool_t IsMuonInAcceptance(Float_t,Float_t,Float_t);
   Bool_t IsTag(Bool_t, Int_t, Bool_t, Bool_t, Bool_t);
 
-  TTree *ntuple = (TTree*) inf->Get("ntJpsi");
-  TTree *nt_mcgen = (TTree*)inf->Get("ntGen");
-  ntuple->AddFriend(nt_mcgen);
 
   //Pt probes
   //trigger efficiency
@@ -96,6 +88,12 @@ void fitJpsi(bool isDataInput=true){
   TH1D* hEtaTrigPtPass[nMuPtBin];
   TH1D* hEtaTrigPtFail[nMuPtBin];
   TH1D* hEtaTrigPtAll[nMuPtBin];
+  TH1D* hTrigPtPass_GenMatch[nMuPtBin];
+  TH1D* hTrigPtFail_GenMatch[nMuPtBin];
+  TH1D*  hTrigPtAll_GenMatch[nMuPtBin];
+  TH1D* hTrigPtPass_PtCut[nMuPtBin];
+  TH1D* hTrigPtFail_PtCut[nMuPtBin];
+  TH1D*  hTrigPtAll_PtCut[nMuPtBin];
   
   //tracking efficiency
   TH1D* hTrkPtPass[nMuPtBin];
@@ -104,6 +102,12 @@ void fitJpsi(bool isDataInput=true){
   TH1D* hEtaTrkPtPass[nMuPtBin];
   TH1D* hEtaTrkPtFail[nMuPtBin];
   TH1D* hEtaTrkPtAll[nMuPtBin];
+  TH1D* hTrkPtPass_GenMatch[nMuPtBin];
+  TH1D* hTrkPtFail_GenMatch[nMuPtBin];
+  TH1D*  hTrkPtAll_GenMatch[nMuPtBin];
+  TH1D* hTrkPtPass_PtCut[nMuPtBin];
+  TH1D* hTrkPtFail_PtCut[nMuPtBin];
+  TH1D*  hTrkPtAll_PtCut[nMuPtBin];
   
   //Muon ID efficiency
   TH1D* hMuIdPtPass[nMuPtBin];
@@ -112,6 +116,12 @@ void fitJpsi(bool isDataInput=true){
   TH1D* hEtaMuIdPtPass[nMuPtBin];
   TH1D* hEtaMuIdPtFail[nMuPtBin];
   TH1D* hEtaMuIdPtAll[nMuPtBin];
+  TH1D* hMuIdPtPass_GenMatch[nMuPtBin];
+  TH1D* hMuIdPtFail_GenMatch[nMuPtBin];
+  TH1D*  hMuIdPtAll_GenMatch[nMuPtBin];
+  TH1D* hMuIdPtPass_PtCut[nMuPtBin];
+  TH1D* hMuIdPtFail_PtCut[nMuPtBin];
+  TH1D*  hMuIdPtAll_PtCut[nMuPtBin];
 
   //Eta probes
   //trigger efficiency
@@ -144,6 +154,26 @@ void fitJpsi(bool isDataInput=true){
     hMuIdPtPass[i] = new TH1D(Form("hMuIdPtPass%d",i),"",nBin,mumulow,mumuhigh);
     hMuIdPtFail[i] = new TH1D(Form("hMuIdPtFail%d",i),"",nBin,mumulow,mumuhigh);
     hMuIdPtAll[i] = new TH1D(Form("hMuIdPtAll%d",i),"",nBin,mumulow,mumuhigh);
+
+    hTrigPtPass_GenMatch[i] = new TH1D(Form("hTrigPtPass_GenMatch%d",i),"",nBin,mumulow,mumuhigh);
+    hTrigPtFail_GenMatch[i] = new TH1D(Form("hTrigPtFail_GenMatch%d",i),"",nBin,mumulow,mumuhigh);
+     hTrigPtAll_GenMatch[i] = new  TH1D(Form("hTrigPtAll_GenMatch%d",i),"",nBin,mumulow,mumuhigh);
+     hTrkPtPass_GenMatch[i] = new  TH1D(Form("hTrkPtPass_GenMatch%d",i),"",nBin,mumuTrklow,mumuTrkhigh);
+     hTrkPtFail_GenMatch[i] = new  TH1D(Form("hTrkPtFail_GenMatch%d",i),"",nBin,mumuTrklow,mumuTrkhigh);
+      hTrkPtAll_GenMatch[i] = new   TH1D(Form("hTrkPtAll_GenMatch%d",i),"",nBin,mumuTrklow,mumuTrkhigh);
+    hMuIdPtPass_GenMatch[i] = new TH1D(Form("hMuIdPtPass_GenMatch%d",i),"",nBin,mumulow,mumuhigh);
+    hMuIdPtFail_GenMatch[i] = new TH1D(Form("hMuIdPtFail_GenMatch%d",i),"",nBin,mumulow,mumuhigh);
+     hMuIdPtAll_GenMatch[i] = new  TH1D(Form("hMuIdPtAll_GenMatch%d",i),"",nBin,mumulow,mumuhigh);
+
+    hTrigPtPass_PtCut[i] = new TH1D(Form("hTrigPtPass_PtCut%d",i),"",nBin,mumulow,mumuhigh);
+    hTrigPtFail_PtCut[i] = new TH1D(Form("hTrigPtFail_PtCut%d",i),"",nBin,mumulow,mumuhigh);
+     hTrigPtAll_PtCut[i] = new  TH1D(Form("hTrigPtAll_PtCut%d",i),"",nBin,mumulow,mumuhigh);
+     hTrkPtPass_PtCut[i] = new  TH1D(Form("hTrkPtPass_PtCut%d",i),"",nBin,mumuTrklow,mumuTrkhigh);
+     hTrkPtFail_PtCut[i] = new  TH1D(Form("hTrkPtFail_PtCut%d",i),"",nBin,mumuTrklow,mumuTrkhigh);
+      hTrkPtAll_PtCut[i] = new   TH1D(Form("hTrkPtAll_PtCut%d",i),"",nBin,mumuTrklow,mumuTrkhigh);
+    hMuIdPtPass_PtCut[i] = new TH1D(Form("hMuIdPtPass_PtCut%d",i),"",nBin,mumulow,mumuhigh);
+    hMuIdPtFail_PtCut[i] = new TH1D(Form("hMuIdPtFail_PtCut%d",i),"",nBin,mumulow,mumuhigh);
+     hMuIdPtAll_PtCut[i] = new  TH1D(Form("hMuIdPtAll_PtCut%d",i),"",nBin,mumulow,mumuhigh);
 
     hEtaTrigPtPass[i] = new TH1D(Form("hEtaTrigPtPass%d",i),"",nBin,-3, 3);
     hEtaTrigPtFail[i] = new TH1D(Form("hEtaTrigPtFail%d",i),"",nBin,-3, 3);
@@ -201,6 +231,20 @@ void fitJpsi(bool isDataInput=true){
   bool isCalo2[NUM_BX];
   int nPixel1[NUM_BX];
   int nPixel2[NUM_BX];
+  int nTracker1[NUM_BX];
+  int nTracker2[NUM_BX];
+  double d01[NUM_BX];
+  double d02[NUM_BX];
+  double dz1[NUM_BX];
+  double dz2[NUM_BX];
+  double dxyPV1[NUM_BX];
+  double dxyPV2[NUM_BX];
+  double dzPV1[NUM_BX];
+  double dzPV2[NUM_BX];
+  double chisq1[NUM_BX];
+  double chisq2[NUM_BX];
+  int innerTrackQuality1[NUM_BX];
+  int innerTrackQuality2[NUM_BX];
 
   bool   isStandAloneMuon1[NUM_BX];
   bool   isStandAloneMuon2[NUM_BX];
@@ -217,7 +261,6 @@ void fitJpsi(bool isDataInput=true){
   double StandAloneMuon_p1[NUM_BX];
   double StandAloneMuon_p2[NUM_BX];
   
-
   ntuple->SetBranchAddress("Run",&Run);
   ntuple->SetBranchAddress("Event",&Event);
   ntuple->SetBranchAddress("size",&size);
@@ -253,6 +296,20 @@ void fitJpsi(bool isDataInput=true){
   ntuple->SetBranchAddress("isCalo2",isCalo2);
   ntuple->SetBranchAddress("nPixel1",nPixel1);
   ntuple->SetBranchAddress("nPixel2",nPixel2);
+  ntuple->SetBranchAddress("nTracker1",nTracker1);
+  ntuple->SetBranchAddress("nTracker2",nTracker2);
+  ntuple->SetBranchAddress("d01",d01);
+  ntuple->SetBranchAddress("d02",d02);
+  ntuple->SetBranchAddress("dz1",dz1);
+  ntuple->SetBranchAddress("dz2",dz2);
+  ntuple->SetBranchAddress("dxyPV1",dxyPV1);
+  ntuple->SetBranchAddress("dxyPV2",dxyPV2);
+  ntuple->SetBranchAddress("dzPV1",dzPV1);
+  ntuple->SetBranchAddress("dzPV2",dzPV2);
+  ntuple->SetBranchAddress("chisq1",chisq1);
+  ntuple->SetBranchAddress("chisq2",chisq2);
+  ntuple->SetBranchAddress("innerTrackQuality1",innerTrackQuality1);
+  ntuple->SetBranchAddress("innerTrackQuality2",innerTrackQuality2);
 
   ntuple->SetBranchAddress("isStandAloneMuon1", isStandAloneMuon1);
   ntuple->SetBranchAddress("isStandAloneMuon2", isStandAloneMuon2);
@@ -266,8 +323,8 @@ void fitJpsi(bool isDataInput=true){
   ntuple->SetBranchAddress("StandAloneMuon_eta2",StandAloneMuon_eta2);
   ntuple->SetBranchAddress("StandAloneMuon_phi1",StandAloneMuon_phi1);
   ntuple->SetBranchAddress("StandAloneMuon_phi2",StandAloneMuon_phi2);
-//  ntuple->SetBranchAddress("StandAloneMuon_p1", StandAloneMuon_p1);
-//  ntuple->SetBranchAddress("StandAloneMuon_p2", StandAloneMuon_p2);
+  ntuple->SetBranchAddress("StandAloneMuon_p1", StandAloneMuon_p1);
+  ntuple->SetBranchAddress("StandAloneMuon_p2", StandAloneMuon_p2);
 
   bool qualitycut1;
   bool qualitycut2;
@@ -281,11 +338,10 @@ void fitJpsi(bool isDataInput=true){
   bool isacceptance2;
   bool isacceptance1_STA;
   bool isacceptance2_STA;
-  TLorentzVector* b4P = new TLorentzVector;
 
   Int_t entries = (Int_t)ntuple->GetEntries();
   for (int i=0; i<entries; i++){
-//  for (int i=0; i<1000; i++){
+//  for (int i=0; i<10; i++){
     if (i%10000==0) cout <<i<<" / "<<entries<<endl;
     ntuple->GetEntry(i);
     for(int j=0;j<size;j++){
@@ -302,25 +358,20 @@ void fitJpsi(bool isDataInput=true){
       isacceptance1_STA=false;
       isacceptance2_STA=false;
 
-      if(id1[j]) qualitycut1 = true;
-      if(id2[j]) qualitycut2 = true;
+//      if(id1[j]) qualitycut1 = true;
+//      if(id2[j]) qualitycut2 = true;
+//      if(fabs(dxyPV1[j])<3. && fabs(dzPV1[j])<30. && nPixel1[j]>=1 && nTracker1[j]>=6 && chisq1[j]<=1.8) qualitycut1 = true;
+//      if(fabs(dxyPV2[j])<3. && fabs(dzPV2[j])<30. && nPixel2[j]>=1 && nTracker2[j]>=6 && chisq2[j]<=1.8) qualitycut2 = true;
+      if(fabs(d01[j])<3. && fabs(dz1[j])<30. && nPixel1[j]>=1 && nTracker1[j]>=6 && chisq1[j]<=1.8) qualitycut1 = true;//testAbsDxyDz
+      if(fabs(d02[j])<3. && fabs(dz2[j])<30. && nPixel2[j]>=1 && nTracker2[j]>=6 && chisq2[j]<=1.8) qualitycut2 = true;
+//      if(fabs(dz1[j])<30. && nPixel1[j]>=1 && nTracker1[j]>=6 && chisq1[j]<=1.8) qualitycut1 = true;//testAbsDxyDz_test1
+//      if(fabs(dz2[j])<30. && nPixel2[j]>=1 && nTracker2[j]>=6 && chisq2[j]<=1.8) qualitycut2 = true;
+//      if(fabs(d01[j])<0.3 && fabs(dz1[j])<30. && nPixel1[j]>=1 && nTracker1[j]>=6 && chisq1[j]<=1.8) qualitycut1 = true;//testAbsDxyDz_test2
+//      if(fabs(d02[j])<0.3 && fabs(dz2[j])<30. && nPixel2[j]>=1 && nTracker2[j]>=6 && chisq2[j]<=1.8) qualitycut2 = true;
       if(StandAloneMuon_id1[j]) qualitycut1_STA = true;
       if(StandAloneMuon_id2[j]) qualitycut2_STA = true;
       isacceptance1=IsMuonInAcceptance(pt1[j],p1[j],eta1[j]);
       isacceptance2=IsMuonInAcceptance(pt2[j],p2[j],eta2[j]);
-
-////Get the "momentum" of the muons
-b4P->SetXYZM(StandAloneMuon_pt1[j]*cos (StandAloneMuon_phi1[j]),
-             StandAloneMuon_pt1[j]*sin (StandAloneMuon_phi1[j]),
-             StandAloneMuon_pt1[j]*sinh(StandAloneMuon_phi1[j]),
-             MUON_MASS);
-StandAloneMuon_p1[j] = b4P->P();
-b4P->SetXYZM(StandAloneMuon_pt2[j]*cos (StandAloneMuon_phi2[j]),
-             StandAloneMuon_pt2[j]*sin (StandAloneMuon_phi2[j]),
-             StandAloneMuon_pt2[j]*sinh(StandAloneMuon_phi2[j]),
-             MUON_MASS);
-StandAloneMuon_p2[j] = b4P->P();
-////
 
       isacceptance1_STA=IsMuonInAcceptance(StandAloneMuon_pt1[j],StandAloneMuon_p1[j],StandAloneMuon_eta1[j]);
       isacceptance2_STA=IsMuonInAcceptance(StandAloneMuon_pt2[j],StandAloneMuon_p2[j],StandAloneMuon_eta2[j]);
@@ -329,8 +380,8 @@ StandAloneMuon_p2[j] = b4P->P();
       
       isTag1=IsTag(isacceptance1,isTriggered1[j],qualitycut1,glb_cut1,isTracker1[j]);
       isTag2=IsTag(isacceptance2,isTriggered2[j],qualitycut2,glb_cut2,isTracker2[j]);
-//	  isTag1 = (isTag1&&nPixel1[j]>1)?true:false;
-//	  isTag2 = (isTag2&&nPixel2[j]>1)?true:false;
+	  //isTag1 = (isTag1&&nPixel1[j]>1)?true:false;
+	  //isTag2 = (isTag2&&nPixel2[j]>1)?true:false;
 
       if(isTag1||isTag2){
         if(isTag1){
@@ -339,34 +390,64 @@ StandAloneMuon_p2[j] = b4P->P();
               //tracking efficiency
               if(isStandAloneMuon2[j] && outerTrackisNonnull2[j] && isacceptance2_STA && (charge1[j]*StandAloneMuon_charge2[j]==-1)){
 //              if(outerTrackisNonnull2[j] && isacceptance2_STA ){
-                hTrkPtAll[m]->Fill(mass[j][1]);
+                hTrkPtAll[m]->Fill(mass[j][1]); 
+				if(gen[j]==122) hTrkPtAll_GenMatch[m]->Fill(mass[j][1]); 
+				if(pt1[j]>PtCut && pt2[j]>PtCut) hTrkPtAll_PtCut[m]->Fill(mass[j][1]); 
                 hEtaTrkPtAll[m]->Fill(eta2[j]);
                 massTrk=mass[j][1]; ptTrk = pt2[j]; etaTrk = eta2[j]; passTrk = 0; genTrk = gen[j];
-                if(qualitycut2_STA && isTracker2[j]) {hTrkPtPass[m]->Fill(mass[j][1]); passTrk=1; hEtaTrkPtPass[m]->Fill(eta2[j]);}
-                else { hTrkPtFail[m]->Fill(mass[j][1]); hTrkPtFail[m]->Fill(eta2[j]);}
+                if(qualitycut2_STA && isTracker2[j]) {
+				  hTrkPtPass[m]->Fill(mass[j][1]); passTrk=1; hEtaTrkPtPass[m]->Fill(eta2[j]);
+				  if(gen[j]==122) hTrkPtPass_GenMatch[m]->Fill(mass[j][1]); 
+				  if(pt1[j]>PtCut && pt2[j]>PtCut) hTrkPtPass_PtCut[m]->Fill(mass[j][1]); 
+				}
+                else { 
+				  hTrkPtFail[m]->Fill(mass[j][1]); hTrkPtFail[m]->Fill(eta2[j]);
+                  if(gen[j]==122) hTrkPtFail_GenMatch[m]->Fill(mass[j][1]); 
+				  if(pt1[j]>PtCut && pt2[j]>PtCut) hTrkPtFail_PtCut[m]->Fill(mass[j][1]); 
+				}
                 TnPtreeTrk->Fill();
               }//tracking efficinecy over
 
               //muon ID efficiency
               //if(qualitycut2&&isCalo2[j]&&isacceptance2){
               //if(qualitycut2&&isTracker2[j]&&isacceptance2){
-              if(qualitycut2 && isTracker2[j] && isacceptance2&&isCalo2[j] && (charge1[j]*charge2[j]==-1)){
+              if(qualitycut2 && isTracker2[j] && isacceptance2 && isCalo2[j] && (charge1[j]*charge2[j]==-1)){
                 hMuIdPtAll[m]->Fill(mass[j][0]);
+                if(gen[j]==122) hMuIdPtAll_GenMatch[m]->Fill(mass[j][0]);
+				if(pt1[j]>PtCut && pt2[j]>PtCut) hMuIdPtAll_PtCut[m]->Fill(mass[j][0]); 
                 hEtaMuIdPtAll[m]->Fill(eta2[j]);
                 massID=mass[j][0]; ptID = pt2[j]; etaID = eta2[j]; passID = 0; genID = gen[j];
                 //if(isTracker2[j]&&isacceptance2){ hMuIdPtPass[m]->Fill(mass[j][0]); passID=1; hEtaMuIdPtPass[m]->Fill(eta2[j]);}
-                if(glb_cut2){ hMuIdPtPass[m]->Fill(mass[j][0]); passID=1; hEtaMuIdPtPass[m]->Fill(eta2[j]);}
-                else {hMuIdPtFail[m]->Fill(mass[j][0]); hEtaMuIdPtFail[m]->Fill(eta2[j]);}
+                if(glb_cut2){ 
+                  hMuIdPtPass[m]->Fill(mass[j][0]); passID=1; hEtaMuIdPtPass[m]->Fill(eta2[j]);
+                  if(gen[j]==122) hMuIdPtPass_GenMatch[m]->Fill(mass[j][0]);
+				  if(pt1[j]>PtCut && pt2[j]>PtCut) hMuIdPtPass_PtCut[m]->Fill(mass[j][0]); 
+                }
+                else {
+                  hMuIdPtFail[m]->Fill(mass[j][0]); hEtaMuIdPtFail[m]->Fill(eta2[j]);
+                  if(gen[j]==122) hMuIdPtFail_GenMatch[m]->Fill(mass[j][0]);
+				  if(pt1[j]>PtCut && pt2[j]>PtCut) hMuIdPtFail_PtCut[m]->Fill(mass[j][0]); 
+                }
                 TnPtreeID->Fill();
               }//muon ID efficiency over
 
               //trigger efficiency
               if(qualitycut2 && glb_cut2 && isTracker2[j] && isacceptance2 && (charge1[j]*charge2[j]==-1)){
                 hTrigPtAll[m]->Fill(mass[j][0]);
+                if(gen[j]==122) hTrigPtAll_GenMatch[m]->Fill(mass[j][0]);
+				if(pt1[j]>PtCut && pt2[j]>PtCut) hTrigPtAll_PtCut[m]->Fill(mass[j][0]); 
                 hEtaTrigPtAll[m]->Fill(eta2[j]);
                 massTrg=mass[j][0]; ptTrg = pt2[j]; etaTrg = eta2[j]; passTrg = 0; genTrg = gen[j];
-                if(isTriggered2[j]) {hTrigPtPass[m]->Fill(mass[j][0]); passTrg = 1; hEtaTrigPtPass[m]->Fill(eta2[j]);}
-                else { hTrigPtFail[m]->Fill(mass[j][0]); hEtaTrigPtFail[m]->Fill(eta2[j]);}
+                if(isTriggered2[j]) {
+                  hTrigPtPass[m]->Fill(mass[j][0]); passTrg = 1; hEtaTrigPtPass[m]->Fill(eta2[j]);
+                  if(gen[j]==122) hTrigPtPass_GenMatch[m]->Fill(mass[j][0]);
+				  if(pt1[j]>PtCut && pt2[j]>PtCut) hTrigPtPass_PtCut[m]->Fill(mass[j][0]); 
+                }
+                else { 
+                  hTrigPtFail[m]->Fill(mass[j][0]); hEtaTrigPtFail[m]->Fill(eta2[j]);
+                  if(gen[j]==122) hTrigPtFail_GenMatch[m]->Fill(mass[j][0]);
+				  if(pt1[j]>PtCut && pt2[j]>PtCut) hTrigPtFail_PtCut[m]->Fill(mass[j][0]); 
+                }
                 TnPtreeTrg->Fill();
               }//trigger efficiency over
             }//if proper pt bin
@@ -380,9 +461,19 @@ StandAloneMuon_p2[j] = b4P->P();
 //              if(outerTrackisNonnull1[j] && isacceptance1_STA ){
                 massTrk=mass[j][2]; ptTrk = pt1[j]; etaTrk = eta1[j]; passTrk = 0; genTrk = gen[j];
                 hTrkPtAll[m]->Fill(mass[j][2]);
+				if(gen[j]==122) hTrkPtAll_GenMatch[m]->Fill(mass[j][2]); 
+				if(pt1[j]>PtCut && pt2[j]>PtCut) hTrkPtAll_PtCut[m]->Fill(mass[j][2]); 
                 hEtaTrkPtAll[m]->Fill(eta1[j]);
-                if(qualitycut1_STA && isTracker1[j]) {hTrkPtPass[m]->Fill(mass[j][2]); passTrk = 1; hEtaTrkPtPass[m]->Fill(eta1[j]);}
-                else { hTrkPtFail[m]->Fill(mass[j][2]); hEtaTrkPtFail[m]->Fill(eta1[j]);}
+                if(qualitycut1_STA && isTracker1[j]) {
+                  hTrkPtPass[m]->Fill(mass[j][2]); passTrk = 1; hEtaTrkPtPass[m]->Fill(eta1[j]);
+				  if(gen[j]==122) hTrkPtPass_GenMatch[m]->Fill(mass[j][2]); 
+				  if(pt1[j]>PtCut && pt2[j]>PtCut) hTrkPtPass_PtCut[m]->Fill(mass[j][2]); 
+                }
+                else { 
+                  hTrkPtFail[m]->Fill(mass[j][2]); hEtaTrkPtFail[m]->Fill(eta1[j]);
+				  if(gen[j]==122) hTrkPtFail_GenMatch[m]->Fill(mass[j][2]); 
+				  if(pt1[j]>PtCut && pt2[j]>PtCut) hTrkPtFail_PtCut[m]->Fill(mass[j][2]); 
+                }
                 TnPtreeTrk->Fill();
               }//tracking efficinecy over
 
@@ -391,21 +482,41 @@ StandAloneMuon_p2[j] = b4P->P();
               //if(qualitycut1&&isTracker1[j]&&isacceptance1){
               if(qualitycut1 && isTracker1[j] && isacceptance1 && isCalo1[j] && (charge1[j]*charge2[j]==-1)){
                 hMuIdPtAll[m]->Fill(mass[j][0]);
+                if(gen[j]==122) hMuIdPtAll_GenMatch[m]->Fill(mass[j][0]);
+				if(pt1[j]>PtCut && pt2[j]>PtCut) hMuIdPtAll_PtCut[m]->Fill(mass[j][0]); 
                 hEtaMuIdPtAll[m]->Fill(eta1[j]);
                 massID=mass[j][0]; ptID = pt1[j]; etaID = eta1[j]; passID = 0; genID = gen[j];
                 //if(isTracker1[j]&&isacceptance1) {hMuIdPtPass[m]->Fill(mass[j][0]); passID = 1; hEtaMuIdPtPass[m]->Fill(eta1[j]);}
-                if(glb_cut1) {hMuIdPtPass[m]->Fill(mass[j][0]); passID = 1; hEtaMuIdPtPass[m]->Fill(eta1[j]);}
-                else {hMuIdPtFail[m]->Fill(mass[j][0]); hEtaMuIdPtFail[m]->Fill(eta1[j]);}
+                if(glb_cut1) {
+                  hMuIdPtPass[m]->Fill(mass[j][0]); passID = 1; hEtaMuIdPtPass[m]->Fill(eta1[j]);
+                  if(gen[j]==122) hMuIdPtPass_GenMatch[m]->Fill(mass[j][0]);
+				  if(pt1[j]>PtCut && pt2[j]>PtCut) hMuIdPtPass_PtCut[m]->Fill(mass[j][0]); 
+                }
+                else {
+                  hMuIdPtFail[m]->Fill(mass[j][0]); hEtaMuIdPtFail[m]->Fill(eta1[j]);
+                  if(gen[j]==122) hMuIdPtFail_GenMatch[m]->Fill(mass[j][0]);
+				  if(pt1[j]>PtCut && pt2[j]>PtCut) hMuIdPtFail_PtCut[m]->Fill(mass[j][0]); 
+                }
                 TnPtreeID->Fill();
               }//muon ID efficiency over
 
               //trigger efficiency
               if(qualitycut1 && glb_cut1 && isTracker1[j] && isacceptance1 && (charge1[j]*charge2[j]==-1)){
                 hTrigPtAll[m]->Fill(mass[j][0]);
+                if(gen[j]==122) hTrigPtAll_GenMatch[m]->Fill(mass[j][0]);
+				if(pt1[j]>PtCut && pt2[j]>PtCut) hTrigPtAll_PtCut[m]->Fill(mass[j][0]); 
                 hEtaTrigPtAll[m]->Fill(eta1[j]);
                 massTrg=mass[j][0]; ptTrg = pt1[j]; etaTrg = eta1[j]; passTrg = 0; genTrg = gen[j];
-                if(isTriggered1[j]) {hTrigPtPass[m]->Fill(mass[j][0]); passTrg = 1; hEtaTrigPtPass[m]->Fill(eta1[j]);}
-                else { hTrigPtFail[m]->Fill(mass[j][0]); hEtaTrigPtFail[m]->Fill(eta1[j]);}
+                if(isTriggered1[j]) {
+                  hTrigPtPass[m]->Fill(mass[j][0]); passTrg = 1; hEtaTrigPtPass[m]->Fill(eta1[j]);
+                  if(gen[j]==122) hTrigPtPass_GenMatch[m]->Fill(mass[j][0]);
+				  if(pt1[j]>PtCut && pt2[j]>PtCut) hTrigPtPass_PtCut[m]->Fill(mass[j][0]); 
+                }
+                else { 
+                  hTrigPtFail[m]->Fill(mass[j][0]); hEtaTrigPtFail[m]->Fill(eta1[j]);
+                  if(gen[j]==122) hTrigPtFail_GenMatch[m]->Fill(mass[j][0]);
+				  if(pt1[j]>PtCut && pt2[j]>PtCut) hTrigPtFail_PtCut[m]->Fill(mass[j][0]); 
+                }
                 TnPtreeTrg->Fill();
               }//trigger efficiency over
             }//if proper pt bin
@@ -489,9 +600,9 @@ StandAloneMuon_p2[j] = b4P->P();
     }//loop over candidates  
   }// loop over events
   
-  foutput->cd();
   TCanvas *cforSave= new TCanvas("cforSave","",600,600);
   cforSave->cd();
+  foutput->cd();
   TLegend *legforSave = myLegend(0.77,0.50,0.90,0.90);
   for(int i = 0; i < nMuPtBin; i++){
     hTrigPtPass[i]->Write();
@@ -503,6 +614,26 @@ StandAloneMuon_p2[j] = b4P->P();
     hMuIdPtPass[i]->Write();
     hMuIdPtFail[i]->Write();
     hMuIdPtAll[i]->Write();
+
+    hTrigPtPass_GenMatch[i]->Write();
+    hTrigPtFail_GenMatch[i]->Write();
+     hTrigPtAll_GenMatch[i]->Write();
+     hTrkPtPass_GenMatch[i]->Write();
+     hTrkPtFail_GenMatch[i]->Write();
+      hTrkPtAll_GenMatch[i]->Write();
+    hMuIdPtPass_GenMatch[i]->Write();
+    hMuIdPtFail_GenMatch[i]->Write();
+     hMuIdPtAll_GenMatch[i]->Write();
+
+    hTrigPtPass_PtCut[i]->Write();
+    hTrigPtFail_PtCut[i]->Write();
+     hTrigPtAll_PtCut[i]->Write();
+     hTrkPtPass_PtCut[i]->Write();
+     hTrkPtFail_PtCut[i]->Write();
+      hTrkPtAll_PtCut[i]->Write();
+    hMuIdPtPass_PtCut[i]->Write();
+    hMuIdPtFail_PtCut[i]->Write();
+     hMuIdPtAll_PtCut[i]->Write();
 
     hEtaTrigPtPass[i]->Write();
     hEtaTrigPtFail[i]->Write();
@@ -524,7 +655,7 @@ StandAloneMuon_p2[j] = b4P->P();
     legforSave->AddEntry(hEtaTrigPtPass[i], "pass", "l");
     legforSave->AddEntry(hEtaTrigPtFail[i], "fail", "l");
     legforSave->Draw("same");
-    cforSave->SaveAs(Form("%s/hEtaTrigPtAll_%d.pdf",plotfolder.Data(), i));
+    if(SavePlots) cforSave->SaveAs(Form("%s/hEtaTrigPtAll_%d.pdf",plotfolder.Data(), i));
 
     hEtaTrkPtAll[i]->Draw();
     hEtaTrkPtPass[i]->SetLineColor(3);
@@ -536,7 +667,7 @@ StandAloneMuon_p2[j] = b4P->P();
     legforSave->AddEntry(hEtaTrkPtPass[i], "pass", "l");
     legforSave->AddEntry(hEtaTrkPtFail[i], "fail", "l");
     legforSave->Draw("same");
-    cforSave->SaveAs(Form("%s/hEtaTrkPtAll_%d.pdf",plotfolder.Data(), i));
+    if(SavePlots) cforSave->SaveAs(Form("%s/hEtaTrkPtAll_%d.pdf",plotfolder.Data(), i));
 
     hEtaMuIdPtAll[i]->Draw();
     hEtaMuIdPtPass[i]->SetLineColor(3);
@@ -548,7 +679,7 @@ StandAloneMuon_p2[j] = b4P->P();
     legforSave->AddEntry(hEtaMuIdPtPass[i], "pass", "l");
     legforSave->AddEntry(hEtaMuIdPtFail[i], "fail", "l");
     legforSave->Draw("same");
-    cforSave->SaveAs(Form("%s/hEtaMuIdPtAll_%d.pdf",plotfolder.Data(), i));
+    if(SavePlots) cforSave->SaveAs(Form("%s/hEtaMuIdPtAll_%d.pdf",plotfolder.Data(), i));
 
 	//Do simple sideband calcualtion for fast check
 	double nall, npass;
@@ -608,14 +739,14 @@ StandAloneMuon_p2[j] = b4P->P();
   EffTrig->Write();
   EffTrk->Write();
   EffMuId->Write();
-  cforSave->SaveAs(Form("%s/eff.pdf",plotfolder.Data()));
-  cforSave->Write();
+  if(SavePlots) cforSave->SaveAs(Form("%s/eff.pdf",plotfolder.Data()));
+  if(SavePlots) cforSave->Write();
   EffTrig->Draw("pe");
-  cforSave->SaveAs(Form("%s/EffTrig.pdf",plotfolder.Data()));
+  if(SavePlots) cforSave->SaveAs(Form("%s/EffTrig.pdf",plotfolder.Data()));
   EffTrk->Draw("pe");
-  cforSave->SaveAs(Form("%s/EffTrk.pdf",plotfolder.Data()));
+  if(SavePlots) cforSave->SaveAs(Form("%s/EffTrk.pdf",plotfolder.Data()));
   EffMuId->Draw("pe");
-  cforSave->SaveAs(Form("%s/EffMuId.pdf",plotfolder.Data()));
+  if(SavePlots) cforSave->SaveAs(Form("%s/EffMuId.pdf",plotfolder.Data()));
 
 
   for(int i = 0; i < nMuEtaBin; i++){
@@ -640,7 +771,7 @@ StandAloneMuon_p2[j] = b4P->P();
 
 Bool_t IsMuonInAcceptance(Float_t pt,Float_t p,Float_t eta){
   Bool_t isselected=false;
-  isselected=(abs(eta)<1.3&&pt>3.3)||(abs(eta)>1.3&&abs(eta)<2.2&&p>2.9)||(abs(eta)>2.2&&abs(eta)<2.4&&pt>0.8);
+  isselected=(fabs(eta)<1.3&&pt>3.3)||(fabs(eta)>1.3&&fabs(eta)<2.2&&p>2.9)||(fabs(eta)>2.2&&fabs(eta)<2.4&&pt>0.8);
   return isselected;
 }
 Bool_t IsTag(Bool_t isacceptance, Int_t istrigger, Bool_t qualitycut, Bool_t glb_cut, Bool_t istracker)

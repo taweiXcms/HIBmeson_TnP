@@ -45,7 +45,7 @@
 ./fitJpsi_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc472/lcg/root/5.32.00-cms/include/TClass.h
 ./fitJpsi_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc472/lcg/root/5.32.00-cms/include/TObjString.h
 ./fitJpsi_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc472/lcg/root/5.32.00-cms/include/TVirtualTreePlayer.h
-./fitJpsi_C.so: ../Display/utilities.h
+./fitJpsi_C.so: utilities.h
 ./fitJpsi_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc472/lcg/root/5.32.00-cms/include/TH1.h
 ./fitJpsi_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc472/lcg/root/5.32.00-cms/include/TAxis.h
 ./fitJpsi_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc472/lcg/root/5.32.00-cms/include/TAttAxis.h
@@ -100,7 +100,7 @@
 ./fitJpsi_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc472/lcg/root/5.32.00-cms/include/TStyle.h
 ./fitJpsi_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc472/lcg/root/5.32.00-cms/include/TLatex.h
 ./fitJpsi_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc472/lcg/root/5.32.00-cms/include/TText.h
-./fitJpsi_C.so: ../Display/format.h
+./fitJpsi_C.so: format.h
 ./fitJpsi_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc472/lcg/root/5.32.00-cms/include/TH1D.h
 ./fitJpsi_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc472/lcg/root/5.32.00-cms/include/cintdictversion.h /cvmfs/cms.cern.ch/slc6_amd64_gcc472/lcg/root/5.32.00-cms/include/RVersion.h
 fitJpsi_C__ROOTBUILDVERSION= 5.32/00

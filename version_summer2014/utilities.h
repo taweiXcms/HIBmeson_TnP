@@ -95,10 +95,12 @@ bool KisooGlobalSel(MuonInfoBranches MuonInfo, int mu1){
   ) return true;
   else return false;
 };
+TLorentzVector *_a;
 bool Acc(MuonInfoBranches MuonInfo, int mu1){
+  _a->SetPtEtaPhiM(MuonInfo.pt[mu1], MuonInfo.eta[mu1], MuonInfo.phi[mu1], MUON_MASS);
   if(fabs(MuonInfo.eta[mu1]) <= 1.3 && MuonInfo.pt[mu1] > 3.3
   ) return true;
-  else if(fabs(MuonInfo.eta[mu1]) > 1.3 && fabs(MuonInfo.eta[mu1]) <= 2.2 && MuonInfo.pt[mu1] > 2.9
+  else if(fabs(MuonInfo.eta[mu1]) > 1.3 && fabs(MuonInfo.eta[mu1]) <= 2.2 && _a->P() > 2.9
   ) return true;
   if(fabs(MuonInfo.eta[mu1]) > 2.2 && fabs(MuonInfo.eta[mu1]) <= 2.4 && MuonInfo.pt[mu1] > 0.8
   ) return true;

@@ -16,16 +16,27 @@
 #include <RooCategory.h>
 #include <RooSimultaneous.h>
 
-//bool isDataInput = true;
 bool isDataInput = false;
+//bool isDataInput = true;
+bool doFit = true;
+//bool doFit = false;
+string postfix = "";
+//string postfix = "_GenMatch";
+//string postfix = "_PtCut";
 
 void FitTnP_sample(){
 
-  TFile*finput=new TFile("../../0930_DefaultMuId_TnPfiles/foutputData.root","read");
-  TString plotfolder = "0930_DefaultMuId_PlotsBinFitData";
+  TFile*finput;
+  TString plotfolder = "1022_DefaultMuId_PlotsBinFitData";
+  if(isDataInput){
+    finput=new TFile("../../1022_DefaultMuId_TnPfiles/foutputData.root","read");
+  }
   if(!isDataInput){
-    finput=new TFile("../../0930_DefaultMuId_TnPfiles/foutputMC.root","read");
-    plotfolder = "0930_DefaultMuId_PlotsBinFitMC";
+//    finput=new TFile("../../1022_DefaultMuId_TnPfiles/foutput_TnPnt_BfinderBoostedMC_20141022_hckim-HIJINGemb_inclBtoPsiMuMu/foutputMC.root","read");
+    finput=new TFile("../../1022_DefaultMuId_TnPfiles/foutput_TnPnt_BfinderBoostedMC_20141022_hckim-HIJINGemb_inclBtoPsiMuMu_testAbsDxyDz/foutputMC.root","read");
+//    finput=new TFile("../../1022_DefaultMuId_TnPfiles/foutput_TnPnt_BfinderBoostedMC_20141022_hckim-HIJINGemb_inclBtoPsiMuMu_testAbsDxyDz_test1/foutputMC.root","read");
+//    finput=new TFile("../../1022_DefaultMuId_TnPfiles/foutput_TnPnt_BfinderBoostedMC_20141022_hckim-HIJINGemb_inclBtoPsiMuMu_testAbsDxyDz_test2/foutputMC.root","read");
+    plotfolder = "1022_DefaultMuId_PlotsBinFitMC";
   }
   finput->cd();
 
@@ -144,15 +155,22 @@ void FitTnP_sample(){
   TCanvas* ctrgall = new TCanvas("ctrgall", "", 20, 60, 600, 600);
 
   //define pt histogram
-  ////tracking efficiency
-  TH1D* hTrkPtPass[nMuPtBin];
-  TH1D* hTrkPtFail[nMuPtBin];
-  ////Muon Id efficinecy
+   TH1D* hTrkPtPass[nMuPtBin];
+   TH1D* hTrkPtFail[nMuPtBin];
   TH1D* hMuIdPtPass[nMuPtBin];
   TH1D* hMuIdPtFail[nMuPtBin];
-  ////trigger efficiency
-  TH1D* hTrgPtPass[nMuPtBin];
-  TH1D* hTrgPtFail[nMuPtBin];
+   TH1D* hTrgPtPass[nMuPtBin];
+   TH1D* hTrgPtFail[nMuPtBin];
+  //GenMatch pf histogram
+   TH1D* hTrkPtPass_GenMatch[nMuPtBin];
+   TH1D* hTrkPtFail_GenMatch[nMuPtBin];
+    TH1D* hTrkPtAll_GenMatch[nMuPtBin];
+  TH1D* hMuIdPtPass_GenMatch[nMuPtBin];
+  TH1D* hMuIdPtFail_GenMatch[nMuPtBin];
+   TH1D* hMuIdPtAll_GenMatch[nMuPtBin];
+   TH1D* hTrgPtPass_GenMatch[nMuPtBin];
+   TH1D* hTrgPtFail_GenMatch[nMuPtBin];
+    TH1D* hTrgPtAll_GenMatch[nMuPtBin];
 /*
   TH1D* hTrkEtaPass[nMuEtaBin];
   TH1D* hTrkEtaFail[nMuEtaBin];
@@ -160,8 +178,11 @@ void FitTnP_sample(){
 */
 
   TH1D* EffTrig = myTH1D("EffTrig", "Mu Pt (GeV)", "efficiency", 2, nMuPtBin, MuPtBin);
-  TH1D* EffTrk = myTH1D("EffTrk", "Mu Pt (GeV)", "efficiency", 3, nMuPtBin, MuPtBin);
-  TH1D* EffMuId = myTH1D("EffMuId", "Mu Pt (GeV)", "efficiency", 4, nMuPtBin, MuPtBin);
+  TH1D* EffTrk = myTH1D("EffTrk", "Mu Pt (GeV)", "efficiency", 4, nMuPtBin, MuPtBin);
+  TH1D* EffMuId = myTH1D("EffMuId", "Mu Pt (GeV)", "efficiency", 6, nMuPtBin, MuPtBin);
+  TH1D* EffTrig_GenMatch = myTH1D("EffTrig_GenMatch", "Mu Pt (GeV)", "efficiency", 2, nMuPtBin, MuPtBin);
+  TH1D*  EffTrk_GenMatch =  myTH1D("EffTrk_GenMatch", "Mu Pt (GeV)", "efficiency", 3, nMuPtBin, MuPtBin);
+  TH1D* EffMuId_GenMatch = myTH1D("EffMuId_GenMatch", "Mu Pt (GeV)", "efficiency", 4, nMuPtBin, MuPtBin);
 
   //make categrory
   ////tracking efficiency
@@ -189,22 +210,33 @@ void FitTnP_sample(){
     massMuId.setBins(100);
     masstrg.setBins(100);
 
-    //tracking efficiency
-    hTrkPtPass[i] = (TH1D*)finput->Get(Form("hTrkPtPass%d", i));
-    hTrkPtFail[i] = (TH1D*)finput->Get(Form("hTrkPtFail%d", i));
-    //Muon Id efficiency
-    hMuIdPtPass[i] = (TH1D*)finput->Get(Form("hMuIdPtPass%d", i));
-    hMuIdPtFail[i] = (TH1D*)finput->Get(Form("hMuIdPtFail%d", i));
-    //trigger efficiency
-    hTrgPtPass[i] = (TH1D*)finput->Get(Form("hTrigPtPass%d", i));
-    hTrgPtFail[i] = (TH1D*)finput->Get(Form("hTrigPtFail%d", i));
+    //Get pt histogram from input
+     hTrkPtPass[i] =  (TH1D*)finput->Get(Form("hTrkPtPass%s%d", postfix.c_str(), i));
+     hTrkPtFail[i] =  (TH1D*)finput->Get(Form("hTrkPtFail%s%d", postfix.c_str(), i));
+    hMuIdPtPass[i] = (TH1D*)finput->Get(Form("hMuIdPtPass%s%d", postfix.c_str(), i));
+    hMuIdPtFail[i] = (TH1D*)finput->Get(Form("hMuIdPtFail%s%d", postfix.c_str(), i));
+     hTrgPtPass[i] = (TH1D*)finput->Get(Form("hTrigPtPass%s%d", postfix.c_str(), i));
+     hTrgPtFail[i] = (TH1D*)finput->Get(Form("hTrigPtFail%s%d", postfix.c_str(), i));
 
-//  hTrkPtPass[i]->Rebin(4);
-//  hTrkPtFail[i]->Rebin(4);
-// hMuIdPtPass[i]->Rebin(4);
-// hMuIdPtFail[i]->Rebin(4);
-//  hTrgPtPass[i]->Rebin(4);
-//  hTrgPtFail[i]->Rebin(4);
+     hTrkPtPass_GenMatch[i] =  (TH1D*)finput->Get(Form("hTrkPtPass_GenMatch%d", i));
+     hTrkPtFail_GenMatch[i] =  (TH1D*)finput->Get(Form("hTrkPtFail_GenMatch%d", i));
+      hTrkPtAll_GenMatch[i] =   (TH1D*)finput->Get(Form("hTrkPtAll_GenMatch%d", i));
+    hMuIdPtPass_GenMatch[i] = (TH1D*)finput->Get(Form("hMuIdPtPass_GenMatch%d", i));
+    hMuIdPtFail_GenMatch[i] = (TH1D*)finput->Get(Form("hMuIdPtFail_GenMatch%d", i));
+     hMuIdPtAll_GenMatch[i] =  (TH1D*)finput->Get(Form("hMuIdPtAll_GenMatch%d", i));
+     hTrgPtPass_GenMatch[i] = (TH1D*)finput->Get(Form("hTrigPtPass_GenMatch%d", i));
+     hTrgPtFail_GenMatch[i] = (TH1D*)finput->Get(Form("hTrigPtFail_GenMatch%d", i));
+      hTrgPtAll_GenMatch[i] =  (TH1D*)finput->Get(Form("hTrigPtAll_GenMatch%d", i));
+
+     hTrkPtPass_GenMatch[i]->Rebin(4);
+     hTrkPtFail_GenMatch[i]->Rebin(4);
+      hTrkPtAll_GenMatch[i]->Rebin(4);
+    hMuIdPtPass_GenMatch[i]->Rebin(4);
+    hMuIdPtFail_GenMatch[i]->Rebin(4);
+     hMuIdPtAll_GenMatch[i]->Rebin(4);
+     hTrgPtPass_GenMatch[i]->Rebin(4);
+     hTrgPtFail_GenMatch[i]->Rebin(4);
+      hTrgPtAll_GenMatch[i]->Rebin(4);
 
 /*
     double pbinnumtrk = hTrkPtPass[i]->GetNbinsX();
@@ -413,18 +445,21 @@ void FitTnP_sample(){
     simTrgPdf.addPdf(model_CB_exp_Fail, "Fail");
 
 	cout<<"Fitting pt binning: "<<i<<endl;
-    simTrkPdf.fitTo(  dataTrkAllset, Extended(true), NumCPU(numCPU), PrintLevel(quiet?-1:1), Warnings(!quiet));    simTrkPdf.fitTo(  dataTrkAllset, Extended(true), NumCPU(numCPU), PrintLevel(quiet?-1:1), Warnings(!quiet));
-    simMuIdPdf.fitTo(dataMuIdAllset, Extended(true), NumCPU(numCPU), PrintLevel(quiet?-1:1), Warnings(!quiet));    simMuIdPdf.fitTo(dataMuIdAllset, Extended(true), NumCPU(numCPU), PrintLevel(quiet?-1:1), Warnings(!quiet));
-    simTrgPdf.fitTo(  dataTrgAllset, Extended(true), NumCPU(numCPU), PrintLevel(quiet?-1:1), Warnings(!quiet));    simTrgPdf.fitTo(  dataTrgAllset, Extended(true), NumCPU(numCPU), PrintLevel(quiet?-1:1), Warnings(!quiet));
+    if(doFit){
+      simTrkPdf.fitTo(  dataTrkAllset, Extended(true), NumCPU(numCPU), PrintLevel(quiet?-1:1), Warnings(!quiet));    simTrkPdf.fitTo(  dataTrkAllset, Extended(true), NumCPU(numCPU), PrintLevel(quiet?-1:1), Warnings(!quiet));
+      simMuIdPdf.fitTo(dataMuIdAllset, Extended(true), NumCPU(numCPU), PrintLevel(quiet?-1:1), Warnings(!quiet));    simMuIdPdf.fitTo(dataMuIdAllset, Extended(true), NumCPU(numCPU), PrintLevel(quiet?-1:1), Warnings(!quiet));
+      simTrgPdf.fitTo(  dataTrgAllset, Extended(true), NumCPU(numCPU), PrintLevel(quiet?-1:1), Warnings(!quiet));    simTrgPdf.fitTo(  dataTrgAllset, Extended(true), NumCPU(numCPU), PrintLevel(quiet?-1:1), Warnings(!quiet));
+    }
 
     //draw tracking efficiency mass distribution
     ////pass
     RooPlot *frameTrkPass = masstrk.frame();
     dataTrkAllset.plotOn(frameTrkPass, Cut("sampleTrk==sampleTrk::Pass"));
-    simTrkPdf.plotOn(frameTrkPass, Slice(sampleTrk, "Pass"), ProjWData(sampleTrk,dataTrkAllset),LineStyle(kDashed), LineColor(kBlue));
-    simTrkPdf.plotOn(frameTrkPass, Slice(sampleTrk, "Pass"), Components("signal_gauss_Pass"),ProjWData(sampleTrk,dataTrkAllset),LineStyle(kDashed), LineColor(kGreen));
-    simTrkPdf.plotOn(frameTrkPass, Slice(sampleTrk, "Pass"), Components("background_cheb_trk_Pass"),ProjWData(sampleTrk,dataTrkAllset),LineStyle(kDashed), LineColor(kRed));
-
+    if(doFit){
+      simTrkPdf.plotOn(frameTrkPass, Slice(sampleTrk, "Pass"), ProjWData(sampleTrk,dataTrkAllset),LineStyle(kDashed), LineColor(kBlue));
+      simTrkPdf.plotOn(frameTrkPass, Slice(sampleTrk, "Pass"), Components("signal_gauss_Pass"),ProjWData(sampleTrk,dataTrkAllset),LineStyle(kDashed), LineColor(kGreen));
+      simTrkPdf.plotOn(frameTrkPass, Slice(sampleTrk, "Pass"), Components("background_cheb_trk_Pass"),ProjWData(sampleTrk,dataTrkAllset),LineStyle(kDashed), LineColor(kRed));
+    }
     ctrkpass->cd();
     frameTrkPass->Draw();
     TLatex t1 = myLatex();
@@ -432,139 +467,173 @@ void FitTnP_sample(){
     t1.DrawLatex(0.17, 0.80, "tracking efficiency");
     t1.DrawLatex(0.17, 0.75, Form("p_{T} = %.1f ~ %.1f GeV", MuPtBin[i], MuPtBin[i+1]));
     ctrkpass->SaveAs(Form("%s/Trk_Pt_bin%d_Pass.pdf", plotfolder.Data(), i));
+    hTrkPtPass_GenMatch[i]->SetMarkerColor(3); hTrkPtPass_GenMatch[i]->Draw("same, p");
+    ctrkpass->SaveAs(Form("%s/Trk_Pt_bin%d_Pass_GenMatch.pdf", plotfolder.Data(), i));
+
 
     ////fail
     RooPlot *frameTrkFail = masstrk.frame();
     dataTrkAllset.plotOn(frameTrkFail, Cut("sampleTrk==sampleTrk::Fail"));
-
-    simTrkPdf.plotOn(frameTrkFail, Slice(sampleTrk, "Fail"), ProjWData(sampleTrk,dataTrkAllset),LineStyle(kDashed), LineColor(kBlue));
-    simTrkPdf.plotOn(frameTrkFail, Slice(sampleTrk, "Fail"), Components("signal_gauss_Fail"),ProjWData(sampleTrk,dataTrkAllset),LineStyle(kDashed), LineColor(kGreen));
-    simTrkPdf.plotOn(frameTrkFail, Slice(sampleTrk, "Fail"), Components("background_cheb_trk_Fail"),ProjWData(sampleTrk,dataTrkAllset),LineStyle(kDashed), LineColor(kRed));
-
+    if(doFit){
+      simTrkPdf.plotOn(frameTrkFail, Slice(sampleTrk, "Fail"), ProjWData(sampleTrk,dataTrkAllset),LineStyle(kDashed), LineColor(kBlue));
+      simTrkPdf.plotOn(frameTrkFail, Slice(sampleTrk, "Fail"), Components("signal_gauss_Fail"),ProjWData(sampleTrk,dataTrkAllset),LineStyle(kDashed), LineColor(kGreen));
+      simTrkPdf.plotOn(frameTrkFail, Slice(sampleTrk, "Fail"), Components("background_cheb_trk_Fail"),ProjWData(sampleTrk,dataTrkAllset),LineStyle(kDashed), LineColor(kRed));
+    }
     ctrkfail->cd();
     frameTrkFail->Draw();
     t1.DrawLatex(0.17, 0.85, "Failing probes");
     t1.DrawLatex(0.17, 0.80, "tracking efficiency");
     t1.DrawLatex(0.17, 0.75, Form("p_{T} = %.1f ~ %.1f GeV", MuPtBin[i], MuPtBin[i+1]));
     ctrkfail->SaveAs(Form("%s/Trk_Pt_bin%d_Fail.pdf", plotfolder.Data(), i));
+    hTrkPtFail_GenMatch[i]->SetMarkerColor(3); hTrkPtFail_GenMatch[i]->Draw("same, p");
+    ctrkfail->SaveAs(Form("%s/Trk_Pt_bin%d_Fail_GenMatch.pdf", plotfolder.Data(), i));
 
     ////all
     RooPlot *frameTrkAll = masstrk.frame();
     dataTrkAllset.plotOn(frameTrkAll);
-
-    simTrkPdf.plotOn(frameTrkAll, ProjWData(sampleTrk, dataTrkAllset), LineColor(kBlue));
-    simTrkPdf.plotOn(frameTrkAll, Components("signal_gauss_Pass, signal_gauss_Fail"), ProjWData(sampleTrk,dataTrkAllset),LineStyle(kDashed), LineColor(kGreen));
-    simTrkPdf.plotOn(frameTrkAll, Components("background_cheb_trk_Pass, background_cheb_trk_Fail"), ProjWData(sampleTrk,dataTrkAllset),LineStyle(kDashed), LineColor(kRed));
-
+    if(doFit){
+      simTrkPdf.plotOn(frameTrkAll, ProjWData(sampleTrk, dataTrkAllset), LineColor(kBlue));
+      simTrkPdf.plotOn(frameTrkAll, Components("signal_gauss_Pass, signal_gauss_Fail"), ProjWData(sampleTrk,dataTrkAllset),LineStyle(kDashed), LineColor(kGreen));
+      simTrkPdf.plotOn(frameTrkAll, Components("background_cheb_trk_Pass, background_cheb_trk_Fail"), ProjWData(sampleTrk,dataTrkAllset),LineStyle(kDashed), LineColor(kRed));
+    }
     ctrkall->cd();
     frameTrkAll->Draw();
     t1.DrawLatex(0.17, 0.85, "All probes");
     t1.DrawLatex(0.17, 0.80, "tracking efficiency");
     t1.DrawLatex(0.17, 0.75, Form("p_{T} = %.1f ~ %.1f GeV", MuPtBin[i], MuPtBin[i+1]));
     ctrkall->SaveAs(Form("%s/Trk_Pt_bin%d_All.pdf", plotfolder.Data(), i));
+    hTrkPtAll_GenMatch[i]->SetMarkerColor(3); hTrkPtAll_GenMatch[i]->Draw("same, p");
+    ctrkall->SaveAs(Form("%s/Trk_Pt_bin%d_All_GenMatch.pdf", plotfolder.Data(), i));
 
     //draw MuonId efficiency mass distribution
     ////pass
     RooPlot *frameMuIdPass = massMuId.frame();
     dataMuIdAllset.plotOn(frameMuIdPass, Cut("sampleMuId==sampleMuId::Pass"));
-
-    simMuIdPdf.plotOn(frameMuIdPass, Slice(sampleMuId, "Pass"), ProjWData(sampleMuId,dataMuIdAllset),LineStyle(kDashed), LineColor(kBlue));
-    simMuIdPdf.plotOn(frameMuIdPass, Slice(sampleMuId, "Pass"), Components("signal_CB_MuId_Pass"),ProjWData(sampleMuId,dataMuIdAllset),LineStyle(kDashed), LineColor(kGreen));
-    simMuIdPdf.plotOn(frameMuIdPass, Slice(sampleMuId, "Pass"), Components("background_cheb_MuId_Pass"),ProjWData(sampleMuId,dataMuIdAllset),LineStyle(kDashed), LineColor(kRed));
-
+    if(doFit){
+      simMuIdPdf.plotOn(frameMuIdPass, Slice(sampleMuId, "Pass"), ProjWData(sampleMuId,dataMuIdAllset),LineStyle(kDashed), LineColor(kBlue));
+      simMuIdPdf.plotOn(frameMuIdPass, Slice(sampleMuId, "Pass"), Components("signal_CB_MuId_Pass"),ProjWData(sampleMuId,dataMuIdAllset),LineStyle(kDashed), LineColor(kGreen));
+      simMuIdPdf.plotOn(frameMuIdPass, Slice(sampleMuId, "Pass"), Components("background_cheb_MuId_Pass"),ProjWData(sampleMuId,dataMuIdAllset),LineStyle(kDashed), LineColor(kRed));
+    }
     cMuIdpass->cd();
     frameMuIdPass->Draw();
     t1.DrawLatex(0.17, 0.85, "Passing probes");
     t1.DrawLatex(0.17, 0.80, "Mu ID efficiency");
     t1.DrawLatex(0.17, 0.75, Form("p_{T} = %.1f ~ %.1f GeV", MuPtBin[i], MuPtBin[i+1]));
     cMuIdpass->SaveAs(Form("%s/MuId_Pt_bin%d_Pass.pdf", plotfolder.Data(), i));
+    hMuIdPtPass_GenMatch[i]->SetMarkerColor(3); hMuIdPtPass_GenMatch[i]->Draw("same, p");
+    cMuIdpass->SaveAs(Form("%s/MuId_Pt_bin%d_Pass_GenMatch.pdf", plotfolder.Data(), i));
 
     ////fail
     RooPlot *frameMuIdFail = massMuId.frame();
     dataMuIdAllset.plotOn(frameMuIdFail, Cut("sampleMuId==sampleMuId::Fail"));
-
-    simMuIdPdf.plotOn(frameMuIdFail, Slice(sampleMuId, "Fail"), ProjWData(sampleMuId,dataMuIdAllset),LineStyle(kDashed), LineColor(kBlue));
-    simMuIdPdf.plotOn(frameMuIdFail, Slice(sampleMuId, "Fail"), Components("signal_CB_MuId_Fail"),ProjWData(sampleMuId,dataMuIdAllset),LineStyle(kDashed), LineColor(kGreen));
-    simMuIdPdf.plotOn(frameMuIdFail, Slice(sampleMuId, "Fail"), Components("background_cheb_MuId_Fail"),ProjWData(sampleMuId,dataMuIdAllset),LineStyle(kDashed), LineColor(kRed));
-
+    if(doFit){
+      simMuIdPdf.plotOn(frameMuIdFail, Slice(sampleMuId, "Fail"), ProjWData(sampleMuId,dataMuIdAllset),LineStyle(kDashed), LineColor(kBlue));
+      simMuIdPdf.plotOn(frameMuIdFail, Slice(sampleMuId, "Fail"), Components("signal_CB_MuId_Fail"),ProjWData(sampleMuId,dataMuIdAllset),LineStyle(kDashed), LineColor(kGreen));
+      simMuIdPdf.plotOn(frameMuIdFail, Slice(sampleMuId, "Fail"), Components("background_cheb_MuId_Fail"),ProjWData(sampleMuId,dataMuIdAllset),LineStyle(kDashed), LineColor(kRed));
+    }
     cMuIdfail->cd();
     frameMuIdFail->Draw();
     t1.DrawLatex(0.17, 0.85, "Failing probes");
     t1.DrawLatex(0.17, 0.80, "Mu ID efficiency");
     t1.DrawLatex(0.17, 0.75, Form("p_{T} = %.1f ~ %.1f GeV", MuPtBin[i], MuPtBin[i+1]));
     cMuIdfail->SaveAs(Form("%s/MuId_Pt_bin%d_Fail.pdf", plotfolder.Data(), i));
+    hMuIdPtFail_GenMatch[i]->SetMarkerColor(3); hMuIdPtFail_GenMatch[i]->Draw("same, p");
+    cMuIdfail->SaveAs(Form("%s/MuId_Pt_bin%d_Fail_GenMatch.pdf", plotfolder.Data(), i));
 
     ////all
     RooPlot *frameMuIdAll = massMuId.frame();
     dataMuIdAllset.plotOn(frameMuIdAll);
-
-    simMuIdPdf.plotOn(frameMuIdAll, ProjWData(sampleMuId, dataMuIdAllset), LineColor(kBlue));
-    simMuIdPdf.plotOn(frameMuIdAll, Components("signal_CB_MuId_Pass, signal_CB_MuId_Fail"), ProjWData(sampleMuId,dataMuIdAllset),LineStyle(kDashed), LineColor(kGreen));
-    simMuIdPdf.plotOn(frameMuIdAll, Components("background_cheb_MuId_Pass, background_cheb_MuId_Fail"), ProjWData(sampleMuId,dataMuIdAllset),LineStyle(kDashed), LineColor(kRed));
-
+    if(doFit){
+      simMuIdPdf.plotOn(frameMuIdAll, ProjWData(sampleMuId, dataMuIdAllset), LineColor(kBlue));
+      simMuIdPdf.plotOn(frameMuIdAll, Components("signal_CB_MuId_Pass, signal_CB_MuId_Fail"), ProjWData(sampleMuId,dataMuIdAllset),LineStyle(kDashed), LineColor(kGreen));
+      simMuIdPdf.plotOn(frameMuIdAll, Components("background_cheb_MuId_Pass, background_cheb_MuId_Fail"), ProjWData(sampleMuId,dataMuIdAllset),LineStyle(kDashed), LineColor(kRed));
+    }
     cMuIdall->cd();
     frameMuIdAll->Draw();
     t1.DrawLatex(0.17, 0.85, "All probes");
     t1.DrawLatex(0.17, 0.80, "Mu ID efficiency");
     t1.DrawLatex(0.17, 0.75, Form("p_{T} = %.1f ~ %.1f GeV", MuPtBin[i], MuPtBin[i+1]));
     cMuIdall->SaveAs(Form("%s/MuId_Pt_bin%d_All.pdf", plotfolder.Data(), i));
+    hMuIdPtAll_GenMatch[i]->SetMarkerColor(3); hMuIdPtAll_GenMatch[i]->Draw("same, p");
+    cMuIdall->SaveAs(Form("%s/MuId_Pt_bin%d_All_GenMatch.pdf", plotfolder.Data(), i));
 
     //draw trigger efficiency mass distribution
     ////pass
     RooPlot *frameTrgPass = masstrg.frame();
     dataTrgAllset.plotOn(frameTrgPass, Cut("sampleTrg==sampleTrg::Pass"));
-
-    simTrgPdf.plotOn(frameTrgPass, Slice(sampleTrg, "Pass"), ProjWData(sampleTrg,dataTrgAllset),LineStyle(kDashed), LineColor(kBlue));
-    simTrgPdf.plotOn(frameTrgPass, Slice(sampleTrg, "Pass"), Components("signal_CB_trg_Pass"),ProjWData(sampleTrg,dataTrgAllset),LineStyle(kDashed), LineColor(kGreen));
-    simTrgPdf.plotOn(frameTrgPass, Slice(sampleTrg, "Pass"), Components("background_exp_Pass"),ProjWData(sampleTrg,dataTrgAllset),LineStyle(kDashed), LineColor(kRed));
-
+    if(doFit){
+      simTrgPdf.plotOn(frameTrgPass, Slice(sampleTrg, "Pass"), ProjWData(sampleTrg,dataTrgAllset),LineStyle(kDashed), LineColor(kBlue));
+      simTrgPdf.plotOn(frameTrgPass, Slice(sampleTrg, "Pass"), Components("signal_CB_trg_Pass"),ProjWData(sampleTrg,dataTrgAllset),LineStyle(kDashed), LineColor(kGreen));
+      simTrgPdf.plotOn(frameTrgPass, Slice(sampleTrg, "Pass"), Components("background_exp_Pass"),ProjWData(sampleTrg,dataTrgAllset),LineStyle(kDashed), LineColor(kRed));
+    }
     ctrgpass->cd();
     frameTrgPass->Draw();
     t1.DrawLatex(0.17, 0.85, "Passing probes");
     t1.DrawLatex(0.17, 0.80, "trigger efficiency");
     t1.DrawLatex(0.17, 0.75, Form("p_{T} = %.1f ~ %.1f GeV", MuPtBin[i], MuPtBin[i+1]));
     ctrgpass->SaveAs(Form("%s/Trg_Pt_bin%d_Pass.pdf", plotfolder.Data(), i));
+    hTrgPtPass_GenMatch[i]->SetMarkerColor(3); hTrgPtPass_GenMatch[i]->Draw("same, p");
+    ctrgpass->SaveAs(Form("%s/Trg_Pt_bin%d_Pass_GenMatch.pdf", plotfolder.Data(), i));
 
     ////fail
     RooPlot *frameTrgFail = masstrg.frame();
     dataTrgAllset.plotOn(frameTrgFail, Cut("sampleTrg==sampleTrg::Fail"));
-
-    simTrgPdf.plotOn(frameTrgFail, Slice(sampleTrg, "Fail"), ProjWData(sampleTrg,dataTrgAllset),LineStyle(kDashed), LineColor(kBlue));
-    simTrgPdf.plotOn(frameTrgFail, Slice(sampleTrg, "Fail"), Components("signal_CB_trg_Fail"),ProjWData(sampleTrg,dataTrgAllset),LineStyle(kDashed), LineColor(kGreen));
-    simTrgPdf.plotOn(frameTrgFail, Slice(sampleTrg, "Fail"), Components("background_exp_Fail"),ProjWData(sampleTrg,dataTrgAllset),LineStyle(kDashed), LineColor(kRed));
-
+    if(doFit){
+      simTrgPdf.plotOn(frameTrgFail, Slice(sampleTrg, "Fail"), ProjWData(sampleTrg,dataTrgAllset),LineStyle(kDashed), LineColor(kBlue));
+      simTrgPdf.plotOn(frameTrgFail, Slice(sampleTrg, "Fail"), Components("signal_CB_trg_Fail"),ProjWData(sampleTrg,dataTrgAllset),LineStyle(kDashed), LineColor(kGreen));
+      simTrgPdf.plotOn(frameTrgFail, Slice(sampleTrg, "Fail"), Components("background_exp_Fail"),ProjWData(sampleTrg,dataTrgAllset),LineStyle(kDashed), LineColor(kRed));
+    }
     ctrgfail->cd();
     frameTrgFail->Draw();
     t1.DrawLatex(0.17, 0.85, "Failing probes");
     t1.DrawLatex(0.17, 0.80, "trigger efficiency");
     t1.DrawLatex(0.17, 0.75, Form("p_{T} = %.1f ~ %.1f GeV", MuPtBin[i], MuPtBin[i+1]));
     ctrgfail->SaveAs(Form("%s/Trg_Pt_bin%d_Fail.pdf", plotfolder.Data(), i));
+    hTrgPtFail_GenMatch[i]->SetMarkerColor(3); hTrgPtFail_GenMatch[i]->Draw("same, p");
+    ctrgfail->SaveAs(Form("%s/Trg_Pt_bin%d_Fail_GenMatch.pdf", plotfolder.Data(), i));
 
     ////all
     RooPlot *frameTrgAll = masstrg.frame();
     dataTrgAllset.plotOn(frameTrgAll);
-
-    simTrgPdf.plotOn(frameTrgAll, ProjWData(sampleTrg, dataTrgAllset), LineColor(kBlue));
-    simTrgPdf.plotOn(frameTrgAll, Components("signal_CB_trg_Pass, signal_CB_trg_Fail"), ProjWData(sampleTrg,dataTrgAllset),LineStyle(kDashed), LineColor(kGreen));
-    simTrgPdf.plotOn(frameTrgAll, Components("background_exp_Pass, background_exp_Fail"), ProjWData(sampleTrg,dataTrgAllset),LineStyle(kDashed), LineColor(kRed));
-
+    if(doFit){
+      simTrgPdf.plotOn(frameTrgAll, ProjWData(sampleTrg, dataTrgAllset), LineColor(kBlue));
+      simTrgPdf.plotOn(frameTrgAll, Components("signal_CB_trg_Pass, signal_CB_trg_Fail"), ProjWData(sampleTrg,dataTrgAllset),LineStyle(kDashed), LineColor(kGreen));
+      simTrgPdf.plotOn(frameTrgAll, Components("background_exp_Pass, background_exp_Fail"), ProjWData(sampleTrg,dataTrgAllset),LineStyle(kDashed), LineColor(kRed));
+    }
     ctrgall->cd();
     frameTrgAll->Draw();
     t1.DrawLatex(0.17, 0.85, "All probes");
     t1.DrawLatex(0.17, 0.80, "trigger efficiency");
     t1.DrawLatex(0.17, 0.75, Form("p_{T} = %.1f ~ %.1f GeV", MuPtBin[i], MuPtBin[i+1]));
     ctrgall->SaveAs(Form("%s/Trg_Pt_bin%d_All.pdf", plotfolder.Data(), i));
+    hTrgPtAll_GenMatch[i]->SetMarkerColor(3); hTrgPtAll_GenMatch[i]->Draw("same, p");
+    ctrgall->SaveAs(Form("%s/Trg_Pt_bin%d_All_GenMatch.pdf", plotfolder.Data(), i));
 
     //Get efficiency
-    EffTrig->SetBinContent(i+1, efficiencytrg.getVal());
-//    EffTrig->SetBinError(i+1, 0.00001);
-    EffTrig->SetBinError(i+1, efficiencytrg.getError());
     EffTrk->SetBinContent(i+1, efficiencytrk.getVal());
-//    EffTrk->SetBinError(i+1, 0.00001);
     EffTrk->SetBinError(i+1, efficiencytrk.getError());
+    //EffTrk->SetBinError(i+1, 0.00001);
+    float _gpass = hTrkPtPass_GenMatch[i]->GetEntries();
+    float _gfail = hTrkPtFail_GenMatch[i]->GetEntries();
+    float _gall = hTrkPtAll_GenMatch[i]->GetEntries();
+    EffTrk_GenMatch->SetBinContent(i+1, _gpass/_gall);
+    EffTrk_GenMatch->SetBinError(i+1, sqrt(_gpass*(1-_gpass/_gall))/_gall);//binomial error
+
     EffMuId->SetBinContent(i+1, efficiencyMuId.getVal());
-//    EffMuId->SetBinError(i+1, 0.00001);
     EffMuId->SetBinError(i+1, efficiencyMuId.getError());
+    //EffMuId->SetBinError(i+1, 0.00001);
+    _gpass = hMuIdPtPass_GenMatch[i]->GetEntries();
+    _gall = hMuIdPtAll_GenMatch[i]->GetEntries();
+    EffMuId_GenMatch->SetBinContent(i+1, _gpass/_gall);
+    EffMuId_GenMatch->SetBinError(i+1, sqrt(_gpass*(1-_gpass/_gall))/_gall);
+    
+    EffTrig->SetBinContent(i+1, efficiencytrg.getVal());
+    EffTrig->SetBinError(i+1, efficiencytrg.getError());
+    //EffTrig->SetBinError(i+1, 0.00001);
+    _gpass = hTrgPtPass_GenMatch[i]->GetEntries();
+    _gall = hTrgPtAll_GenMatch[i]->GetEntries();
+    EffTrig_GenMatch->SetBinContent(i+1, _gpass/_gall);
+    EffTrig_GenMatch->SetBinError(i+1, sqrt(_gpass*(1-_gpass/_gall))/_gall);
   }
   //Save efficiency plots
   TString outputfile;
@@ -586,11 +655,38 @@ void FitTnP_sample(){
   EffMuId->Write();
   cforSave->SaveAs(Form("%s/eff.pdf",plotfolder.Data()));
   cforSave->Write();
+  //Save each efficiency individually
   EffTrig->Draw("pe");
+  EffTrig_GenMatch->SetMarkerColor(3); 
+  TLegend *leg1 = myLegend(0.4,0.399651,0.8775168,0.6073298); leg1->SetTextSize(0.05);
+  leg1->AddEntry(EffTrig, "Trig", "p");
+  if(!isDataInput){
+    EffTrig_GenMatch->Draw("same pe");
+    leg1->AddEntry(EffTrig_GenMatch, "Trig gen. matched", "p");
+  }
+  leg1->Draw("same");
   cforSave->SaveAs(Form("%s/EffTrig.pdf",plotfolder.Data()));
+
   EffTrk->Draw("pe");
+  EffTrk_GenMatch->SetMarkerColor(3); 
+  TLegend *leg2 = myLegend(0.4,0.399651,0.8775168,0.6073298); leg2->SetTextSize(0.05);
+  leg2->AddEntry(EffTrk, "Trk", "p");
+  if(!isDataInput){
+    EffTrk_GenMatch->Draw("same pe");
+    leg2->AddEntry(EffTrk_GenMatch, "Trk gen. matched", "p");
+  }
+  leg2->Draw("same");
   cforSave->SaveAs(Form("%s/EffTrk.pdf",plotfolder.Data()));
+
   EffMuId->Draw("pe");
+  EffMuId_GenMatch->SetMarkerColor(3); 
+  TLegend *leg3 = myLegend(0.4,0.399651,0.8775168,0.6073298); leg3->SetTextSize(0.05);
+  leg3->AddEntry(EffMuId, "MuId", "p");
+  if(!isDataInput){
+    EffMuId_GenMatch->Draw("same pe");
+    leg3->AddEntry(EffMuId_GenMatch, "MuId gen. matched", "p");
+  }
+  leg3->Draw("same");
   cforSave->SaveAs(Form("%s/EffMuId.pdf",plotfolder.Data()));
 
 /*
